@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 
 export async function GET() {
   try {
-    let token = cookies().get("access_token")?.value;
+    const token = cookies().get("access_token")?.value;
 
     return NextResponse.json({ message: "Success", token }, { status: 200 });
   } catch (error) {

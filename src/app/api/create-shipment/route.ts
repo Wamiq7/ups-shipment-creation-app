@@ -120,7 +120,7 @@ export async function POST(req: NextRequest) {
 
     const version = "v2403"; // UPS API version
 
-    let token = cookies().get("access_token")?.value;
+    const token = cookies().get("access_token")?.value;
 
     if (!token?.valueOf) {
       throw new Error("Token not found");

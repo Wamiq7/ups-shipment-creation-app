@@ -35,7 +35,7 @@ export async function POST(req: NextRequest) {
     };
 
     const version = "v2403"; 
-    let token = cookies().get("access_token")?.value;
+    const token = cookies().get("access_token")?.value;
     const response = await fetch(
       `${process.env.BASE_URL}/api/labels/${version}/recovery`,
       {
@@ -87,10 +87,9 @@ export async function POST(req: NextRequest) {
       { message: "Unexpected error occurred", details: responseData },
       { status: response.status }
     );
-  } catch (error:any) {
-    console.error("Error in label recovery:", error);
+  } catch (error) {
     return NextResponse.json(
-      { message: "Server error", error: error.message },
+      { message: "Server error", error},
       { status: 500 }
     );
   }

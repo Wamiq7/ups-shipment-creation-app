@@ -9,7 +9,7 @@ export async function POST(req: NextRequest) {
       addressPayload,
     } = await req.json();
 
-    let token = cookies().get("access_token")?.value;
+    const token = cookies().get("access_token")?.value;
 
     if (!token?.valueOf) {
       throw new Error("Token not found");
