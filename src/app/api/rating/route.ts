@@ -1,4 +1,3 @@
-import { cookies } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: NextRequest) {
@@ -109,7 +108,7 @@ export async function POST(req: NextRequest) {
     const version = "v2403";
     // const additionalInfo = "string";
 
-    const token = cookies().get("access_token")?.value;
+    const token=req.cookies.get("access_token")?.value;
 
     if (!token?.valueOf) {
       throw new Error("Token not found");

@@ -1,4 +1,3 @@
-import { cookies } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: NextRequest) {
@@ -34,7 +33,7 @@ export async function POST(req: NextRequest) {
     );
   }
   const version = "v1";
-  let token = cookies().get("access_token")?.value;
+  const token=req.cookies.get("access_token")?.value;
 
   const apiUrl = `${process.env.BASE_URL}/api/track/${version}/details/${inquiryNumber}?locale=${locale}&returnSignature=${returnSignature}&returnMilestones=${returnMilestones}&returnPOD=${returnPOD}`;
 

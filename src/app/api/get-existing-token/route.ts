@@ -1,9 +1,8 @@
-import { cookies } from "next/headers";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
-export async function GET() {
+export async function GET(req: NextRequest) {
   try {
-    const token = cookies().get("access_token")?.value;
+    const token=req.cookies.get("access_token")?.value;
 
     return NextResponse.json({ message: "Success", token }, { status: 200 });
   } catch (error) {

@@ -1,4 +1,3 @@
-import { cookies } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
 
 // API Route to handle POST request for label recovery
@@ -35,7 +34,7 @@ export async function POST(req: NextRequest) {
     };
 
     const version = "v2403"; 
-    const token = cookies().get("access_token")?.value;
+    const token=req.cookies.get("access_token")?.value;
     const response = await fetch(
       `${process.env.BASE_URL}/api/labels/${version}/recovery`,
       {
