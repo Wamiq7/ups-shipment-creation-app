@@ -3,9 +3,9 @@ import { NextRequest, NextResponse } from "next/server";
 export async function POST(req: NextRequest) {
   // Extract shipment details from the request body
   const {
-    inquiryNumber = "dki9339k",
-    transId = "HDBGJqCPsGUEfpTwHpJPfEUGd0a1CfWiGKyYy6wqKNbydtnv",
-    transactionSrc = "pfecjSUu1pYAQ32AV9sh3WVkPBOyVjYKXCz5zjymmO8cDMQa6HLbY4etlAoRFglG",
+    inquiryNumber,
+    transId,
+    transactionSrc,
     locale = "en_US",
     returnSignature = "false",
     returnMilestones = "false",
@@ -33,7 +33,7 @@ export async function POST(req: NextRequest) {
     );
   }
   const version = "v1";
-  const token=req.cookies.get("access_token")?.value;
+  const token = req.cookies.get("access_token")?.value;
 
   const apiUrl = `${process.env.BASE_URL}/api/track/${version}/details/${inquiryNumber}?locale=${locale}&returnSignature=${returnSignature}&returnMilestones=${returnMilestones}&returnPOD=${returnPOD}`;
 

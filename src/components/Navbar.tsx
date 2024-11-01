@@ -82,13 +82,20 @@ export default function Navbar() {
                 Authenticate
               </button>
             ) : (
-              <li>
+              <li className="flex gap-6 items-center">
                 <Link
                   href={"/"}
                   className="block py-2 px-3 text-white rounded md:p-0"
                   aria-current="page"
                 >
                   Shipping
+                </Link>
+                <Link
+                  href={"/tracking"}
+                  className="block py-2 px-3 text-white rounded md:p-0"
+                  aria-current="page"
+                >
+                  Tracking
                 </Link>
               </li>
             )}
