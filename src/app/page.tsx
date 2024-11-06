@@ -3,6 +3,14 @@
 import { useEffect, useState } from "react";
 import ShipmentForm, { ShipmentData } from "../components/ShipmentForm";
 import { Toaster, toast } from "sonner";
+import { Checkbox } from "@/components/ui/checkbox";
+import PackageShipmentDetails from "@/components/shipment/PackageShipmentDetails";
+import OtherOptionRate from "@/components/shipment/OtherOptionRate";
+import SetPickup from "@/components/shipment/SetPickup";
+import { Input } from "@/components/ui/input";
+import From from "@/components/shipment/From";
+import To from "@/components/shipment/To";
+import ShipmentProfile from "@/components/shipment/ShipmentProfile";
 
 export default function Home() {
   const [label, setLabel] = useState("");
@@ -170,8 +178,48 @@ export default function Home() {
   };
 
   return (
-    <div>
+    <div className="px-6 py-4 flex flex-col gap-4">
       <Toaster position="top-right" richColors />
+      <ShipmentProfile />
+      <div className="grid grid-cols-4 gap-4">
+        <div className="col-span-1 flex flex-col gap-4">
+          <From />
+          <To />
+        </div>
+        <div className="col-span-2 space-y-4">
+          <PackageShipmentDetails />
+          <SetPickup />
+        </div>
+        <div>
+          <OtherOptionRate />
+          <div className="space-y-4 mt-5">
+            <div className="flex items-center space-x-2">
+              <Checkbox id="terms" />
+              <label
+                htmlFor="terms"
+                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+              >
+                Update Existing Shipment Profile
+              </label>
+            </div>
+            <div className="flex items-center space-x-2">
+              <Checkbox id="terms" />
+              <label
+                htmlFor="terms"
+                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+              >
+                Save as New Shipment Profile
+              </label>
+            </div>
+            <Input type="email" placeholder="Email" className="bg-white" />
+            <div className="mx-4">
+              <button className="border border-black text-gray-700 bg-c-orange text-3xl font-semibold px-5 py-4 w-full rounded-lg">
+                Review
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
       {isToken ? (
         <>
           {" "}
