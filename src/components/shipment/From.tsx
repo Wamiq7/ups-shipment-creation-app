@@ -16,13 +16,13 @@ export default function From() {
 
   return (
     <Card>
-      <CardContent className="flex gap-2 items-center pt-6">
+      <CardContent className="p-3 lg:px-6 flex gap-2 items-center lg:pt-6">
         <div className="w-full space-y-3">
-          <CardTitle className="flex items-center gap-2 text-2xl">
+          <CardTitle className="text-base flex items-center gap-2 lg:text-2xl">
             From
           </CardTitle>
           <div className="space-y-1">
-            <CardDescription className="text-black font-normal text-sm">
+            <CardDescription className="text-black font-normal text-xs lg:text-sm">
               My Address
             </CardDescription>
             <BasicSelect options={themeOptions} placeholder="Theme" />
@@ -37,7 +37,9 @@ export default function From() {
             {isEdit ? (
               <div className="flex flex-col gap-3">
                 <div className="grid w-full max-w-sm items-center gap-1.5">
-                  <Label htmlFor="email">Country or Territory *</Label>{" "}
+                  <Label htmlFor="email" className="text-xs lg:text-sm">
+                    Country or Territory*
+                  </Label>{" "}
                   <BasicSelect
                     options={themeOptions}
                     placeholder="Country or Territory"
@@ -114,7 +116,7 @@ export default function From() {
                     <Checkbox id="terms" />
                     <label
                       htmlFor="terms"
-                      className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                      className="text-xs lg:text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                     >
                       Save Edits to this Address
                     </label>
@@ -123,7 +125,7 @@ export default function From() {
                     <Checkbox id="terms" />
                     <label
                       htmlFor="terms"
-                      className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                      className="text-xs lg:text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                     >
                       Save as New Address book
                     </label>

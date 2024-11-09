@@ -178,15 +178,15 @@ export default function Home() {
   };
 
   return (
-    <div className="px-6 py-4 flex flex-col gap-4">
+    <div className="px-3 lg:px-6 py-4 flex flex-col gap-3 lg:gap-4">
       <Toaster position="top-right" richColors />
       <ShipmentProfile />
-      <div className="grid grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
         <div className="col-span-1 flex flex-col gap-4">
           <From />
           <To />
         </div>
-        <div className="col-span-2 space-y-4">
+        <div className="col-span-1 lg:col-span-2 space-y-4">
           <PackageShipmentDetails />
           <SetPickup />
         </div>
@@ -197,7 +197,7 @@ export default function Home() {
               <Checkbox id="terms" />
               <label
                 htmlFor="terms"
-                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                className="text-xs lg:text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
               >
                 Update Existing Shipment Profile
               </label>
@@ -206,14 +206,14 @@ export default function Home() {
               <Checkbox id="terms" />
               <label
                 htmlFor="terms"
-                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                className="text-xs lg:text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
               >
                 Save as New Shipment Profile
               </label>
             </div>
             <Input type="email" placeholder="Email" className="bg-white" />
             <div className="mx-4">
-              <button className="border border-black text-gray-700 bg-c-orange text-3xl font-semibold px-5 py-4 w-full rounded-lg">
+              <button className="border border-black text-gray-700 bg-c-orange text-2xl lg:text-3xl font-semibold px-5 py-4 w-full rounded-lg">
                 Review
               </button>
             </div>

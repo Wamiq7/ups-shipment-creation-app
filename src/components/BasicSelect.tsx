@@ -22,7 +22,7 @@ export default function BasicSelect({
 }: DynamicSelectProps) {
   return (
     <Select>
-      <SelectTrigger className="w-full">
+      <SelectTrigger className="w-full text-xs lg:text-lg h-7 lg:h-9">
         <SelectValue placeholder={placeholder} />
       </SelectTrigger>
       <SelectContent>

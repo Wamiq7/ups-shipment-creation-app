@@ -37,7 +37,7 @@ export function CalendarInput({
           <Button
             variant="outline"
             className={cn(
-              "w-full pl-3 text-left font-normal",
+              "h-7 lg:h-9 w-full pl-3 text-left font-normal",
               !selectedDate && "text-muted-foreground"
             )}
           >
