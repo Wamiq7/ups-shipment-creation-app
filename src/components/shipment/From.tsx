@@ -88,7 +88,7 @@ export default function From() {
                     />
                   </div>
                 </div>
-                <div className="flex gap-2">
+                <div className="flex flex-col gap-2">
                   <div className="grid w-full max-w-sm items-center gap-1.5">
                     <Label htmlFor="email" className="text-xs">
                       Email
