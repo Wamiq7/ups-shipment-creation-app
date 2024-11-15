@@ -3,6 +3,7 @@ import { CalendarInput } from "../CalenderInput";
 import { InputWithLabel } from "../InputWithLabel";
 import { Checkbox } from "../ui/checkbox";
 import BasicSelect from "../BasicSelect";
+import { Label } from "../ui/label";
 
 const themeOptions = [
   { value: "light", label: "Light" },
@@ -10,7 +11,19 @@ const themeOptions = [
   { value: "system", label: "System" },
 ];
 
-const PackageInput = () => {
+const serviceTypes = [
+  { value: "03", label: "Ground" },
+  { value: "02", label: "2nd Day Air" },
+  { value: "01", label: "Next Day Air" },
+];
+
+const PackageInput = ({ shipmentData, setShipmentData }) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
+    setShipmentData({ ...shipmentData, [e.target.name]: e.target.value });
+  };
+
   return (
     <div className="grid grid-cols-7 gap-3 lg:gap-8 w-full mb-3">
       <div className="flex flex-col gap-3">
@@ -30,28 +43,25 @@ const PackageInput = () => {
             <div className="flex gap-3 lg:gap-4">
               <InputWithLabel
                 label="inch"
-                type="email"
+                type="number"
                 placeholder="L"
-                id="email"
-                // value={email}
-                // onChange={(e) => setEmail(e.target.value)}
+                value={shipmentData.packageLength}
+                onChange={handleChange}
               />
               <InputWithLabel
                 label="inch"
-                type="email"
+                type="number"
                 placeholder="W"
-                id="email"
-                // value={email}
-                // onChange={(e) => setEmail(e.target.value)}
+                value={shipmentData.packageWidth}
+                onChange={handleChange}
               />
               <InputWithLabel
                 label="inch"
-                type="email"
+                type="number"
                 placeholder="H"
-                id="email"
-                // value={email}
-                // onChange={(e) => setEmail(e.target.value)}
-              />{" "}
+                value={shipmentData.packageHeight}
+                onChange={handleChange}
+              />
             </div>
           </div>
           <div className="lg:block hidden"></div>
@@ -60,11 +70,10 @@ const PackageInput = () => {
       <div className="col-span-1 flex gap-2">
         <InputWithLabel
           label="lbs"
-          type="email"
+          type="number"
           placeholder=""
-          id="email"
-          // value={email}
-          // onChange={(e) => setEmail(e.target.value)}
+          value={shipmentData.packageWeight}
+          onChange={handleChange}
         />
       </div>
       <div className="col-span-1 flex flex-col space-y-2 h-full justify-center items-center">
@@ -76,7 +85,30 @@ const PackageInput = () => {
   );
 };
 
-export default function PackageShipmentDetails() {
+export default function PackageShipmentDetails({
+  shipmentData,
+  setShipmentData,
+}) {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
+    setShipmentData({ ...shipmentData, [e.target.name]: e.target.value });
+  };
+
+  const handleServiceTypeChange = (value: string) => {
+    setShipmentData({
+      ...shipmentData,
+      serviceType: value,
+    });
+  };
+
+  const selectedOption = serviceTypes.find(
+    (option) => option.value === shipmentData?.serviceType
+  );
+  const selectedLabel = selectedOption?.label || "Select an option";
+
+  console.log("shipmentData", selectedLabel);
+
   return (
     <Card>
       <CardHeader className="bg-c-gray-accent-head rounded-t-xl px-6 py-2 text-white">
@@ -86,13 +118,34 @@ export default function PackageShipmentDetails() {
       </CardHeader>
       <CardContent className="p-3 lg:px-6 flex flex-col items-start lg:pt-6">
         <div className="grid grid-cols-3 gap-2 lg:gap-3 w-full">
-          <CalendarInput
-            label="Date of Birth"
-            placeholder="Select date"
-            onDateChange={(date) => console.log("Selected date:", date)}
-          />
-          <BasicSelect options={themeOptions} placeholder="Theme" />
-          <BasicSelect options={themeOptions} placeholder="Theme" />
+          {/* <div className="grid w-full max-w-sm items-center gap-1.5"> */}
+          <div className="grid w-full max-w-sm items-center gap-1.5">
+            <Label htmlFor="email" className="text-xs">
+              Ship date*
+            </Label>
+            <CalendarInput
+              label="Date of Birth"
+              placeholder="Select date"
+              onDateChange={(date) => console.log("Selected date:", date)}
+            />
+          </div>
+          <div className="grid w-full max-w-sm items-center gap-1.5">
+            <Label htmlFor="email" className="text-xs">
+              Service Type*
+            </Label>
+            <BasicSelect
+              options={serviceTypes}
+              placeholder={selectedLabel}
+              value={shipmentData?.serviceType}
+              onChange={handleServiceTypeChange}
+            />
+          </div>
+          <div className="grid w-full max-w-sm items-center gap-1.5">
+            <Label htmlFor="email" className="text-xs">
+              Package Type*
+            </Label>
+            <BasicSelect value={""} options={themeOptions} placeholder="" />
+          </div>
         </div>
         <div className="grid grid-cols-7 gap-3 lg:gap-8 w-full mt-5 lg:mt-8">
           <div className="flex flex-col gap-3">
@@ -126,7 +179,10 @@ export default function PackageShipmentDetails() {
             </div>
           </div>
         </div>
-        <PackageInput />
+        <PackageInput
+          shipmentData={shipmentData}
+          setShipmentData={setShipmentData}
+        />
         <button className="text-c-blue-accent italic text-xs hover:underline">
           + Add another Package
         </button>
@@ -134,7 +190,10 @@ export default function PackageShipmentDetails() {
           Add another Package to add more row
         </h1>
         <div className="border border-c-orange border-dotted py-2">
-          <PackageInput />
+          <PackageInput
+            shipmentData={shipmentData}
+            setShipmentData={setShipmentData}
+          />
         </div>
       </CardContent>
     </Card>

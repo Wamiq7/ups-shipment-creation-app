@@ -12,17 +12,21 @@ type Option = {
 };
 
 interface DynamicSelectProps {
+  value: string;
   options: Option[];
   placeholder?: string;
+  onChange?: (value: string) => void;
 }
 
 export default function BasicSelect({
+  value,
   options = [],
   placeholder = "Select an option",
+  onChange,
 }: DynamicSelectProps) {
   return (
-    <Select>
-      <SelectTrigger className="w-full text-xs lg:text-lg h-7 lg:h-9">
+    <Select value={value} onValueChange={onChange}>
+      <SelectTrigger className="w-full h-7 lg:h-9 text-xs lg:text-sm">
         <SelectValue placeholder={placeholder} />
       </SelectTrigger>
       <SelectContent>

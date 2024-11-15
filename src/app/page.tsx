@@ -11,6 +11,7 @@ import { Input } from "@/components/ui/input";
 import From from "@/components/shipment/From";
 import To from "@/components/shipment/To";
 import ShipmentProfile from "@/components/shipment/ShipmentProfile";
+import Navbar from "@/components/Navbar";
 
 export default function Home() {
   const [label, setLabel] = useState("");
@@ -178,113 +179,124 @@ export default function Home() {
   };
 
   return (
-    <div className="px-3 lg:px-6 py-4 flex flex-col gap-3 lg:gap-4">
-      <Toaster position="top-right" richColors />
-      <ShipmentProfile />
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
-        <div className="col-span-1 flex flex-col gap-4">
-          <From />
-          <To />
-        </div>
-        <div className="col-span-1 lg:col-span-2 space-y-4">
-          <PackageShipmentDetails />
-          <SetPickup />
-        </div>
-        <div>
-          <OtherOptionRate />
-          <div className="space-y-4 mt-5">
-            <div className="flex items-center space-x-2">
-              <Checkbox id="terms" />
-              <label
-                htmlFor="terms"
-                className="text-xs lg:text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-              >
-                Update Existing Shipment Profile
-              </label>
-            </div>
-            <div className="flex items-center space-x-2">
-              <Checkbox id="terms" />
-              <label
-                htmlFor="terms"
-                className="text-xs lg:text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-              >
-                Save as New Shipment Profile
-              </label>
-            </div>
-            <Input type="email" placeholder="Email" className="bg-white" />
-            <div className="mx-4">
-              <button className="border border-black text-gray-700 bg-c-orange text-2xl lg:text-3xl font-semibold px-5 py-4 w-full rounded-lg">
-                Review
-              </button>
+    <div>
+      <Navbar />
+      <div className="px-3 lg:px-6 py-4 flex flex-col gap-3 lg:gap-4">
+        <Toaster position="top-right" richColors />
+        <ShipmentProfile />
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
+          <div className="col-span-1 flex flex-col gap-4">
+            <From
+              shipmentData={shipmentData}
+              setShipmentData={setShipmentData}
+            />
+            <To shipmentData={shipmentData} setShipmentData={setShipmentData} />
+          </div>
+          <div className="col-span-1 lg:col-span-2 space-y-4">
+            <PackageShipmentDetails
+              shipmentData={shipmentData}
+              setShipmentData={setShipmentData}
+            />
+            <SetPickup />
+          </div>
+          <div>
+            <OtherOptionRate />
+            <div className="space-y-4 mt-5">
+              <div className="flex items-center space-x-2">
+                <Checkbox id="terms" />
+                <label
+                  htmlFor="terms"
+                  className="text-xs lg:text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                >
+                  Update Existing Shipment Profile
+                </label>
+              </div>
+              <div className="flex items-center space-x-2">
+                <Checkbox id="terms" />
+                <label
+                  htmlFor="terms"
+                  className="text-xs lg:text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                >
+                  Save as New Shipment Profile
+                </label>
+              </div>
+              <Input type="email" placeholder="Email" className="bg-white" />
+              <div className="mx-4">
+                <button className="border border-black text-gray-700 bg-c-orange text-2xl lg:text-3xl font-semibold px-5 py-4 w-full rounded-lg">
+                  Review
+                </button>
+              </div>
             </div>
           </div>
         </div>
+        {isToken ? (
+          <>
+            {" "}
+            {ratingsResponse ? (
+              <div className="flex flex-col gap-2 w-full items-center justify-center my-4">
+                <h1>Ratings will be</h1>
+                <h1>
+                  {
+                    ratingsResponse.RateResponse.RatedShipment.TotalCharges
+                      .CurrencyCode
+                  }
+                </h1>
+                <h1>
+                  {
+                    ratingsResponse.RateResponse.RatedShipment.TotalCharges
+                      .MonetaryValue
+                  }
+                </h1>
+                <button
+                  className="text-white bg-blue-700 w-fit hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 focus:outline-none"
+                  onClick={() => {
+                    handleCreateShipment();
+                  }}
+                >
+                  Create Shipment
+                </button>
+                <button
+                  className="text-white bg-blue-700 w-fit hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 focus:outline-none"
+                  onClick={() => {
+                    setRatingsResponse(null);
+                  }}
+                >
+                  Go Back
+                </button>
+              </div>
+            ) : (
+              <form
+                onSubmit={handleSubmit}
+                className="max-w-screen-sm mx-auto flex flex-col gap-4 mt-10"
+              >
+                <ShipmentForm
+                  shipmentData={shipmentData}
+                  setShipmentData={setShipmentData}
+                />
+                <button
+                  type="submit"
+                  className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 focus:outline-none"
+                >
+                  Generate Ratings
+                </button>
+              </form>
+            )}
+          </>
+        ) : (
+          <h1 className="text-center my-4">
+            Welcome, Authenticate to continue
+          </h1>
+        )}
+        {label && (
+          <div>
+            <h3>Shipment Label</h3>
+            <img src={label} alt="Shipping Label" className="" />
+            <a href={label} download="label.gif">
+              Download Label
+            </a>
+          </div>
+        )}
       </div>
-      {isToken ? (
-        <>
-          {" "}
-          {ratingsResponse ? (
-            <div className="flex flex-col gap-2 w-full items-center justify-center my-4">
-              <h1>Ratings will be</h1>
-              <h1>
-                {
-                  ratingsResponse.RateResponse.RatedShipment.TotalCharges
-                    .CurrencyCode
-                }
-              </h1>
-              <h1>
-                {
-                  ratingsResponse.RateResponse.RatedShipment.TotalCharges
-                    .MonetaryValue
-                }
-              </h1>
-              <button
-                className="text-white bg-blue-700 w-fit hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 focus:outline-none"
-                onClick={() => {
-                  handleCreateShipment();
-                }}
-              >
-                Create Shipment
-              </button>
-              <button
-                className="text-white bg-blue-700 w-fit hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 focus:outline-none"
-                onClick={() => {
-                  setRatingsResponse(null);
-                }}
-              >
-                Go Back
-              </button>
-            </div>
-          ) : (
-            <form
-              onSubmit={handleSubmit}
-              className="max-w-screen-sm mx-auto flex flex-col gap-4 mt-10"
-            >
-              <ShipmentForm
-                shipmentData={shipmentData}
-                setShipmentData={setShipmentData}
-              />
-              <button
-                type="submit"
-                className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 focus:outline-none"
-              >
-                Generate Ratings
-              </button>
-            </form>
-          )}
-        </>
-      ) : (
-        <h1 className="text-center my-4">Welcome, Authenticate to continue</h1>
-      )}
-      {label && (
-        <div>
-          <h3>Shipment Label</h3>
-          <img src={label} alt="Shipping Label" className="" />
-          <a href={label} download="label.gif">
-            Download Label
-          </a>
-        </div>
-      )}
     </div>
   );
 }

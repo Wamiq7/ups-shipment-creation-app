@@ -70,7 +70,7 @@ function ShipmentForm({
 
       {/* Sender Information */}
       <h2 className="text-xl font-semibold mt-4">Sender Information</h2>
-      <div>
+      {/* <div>
         <label>Sender Name:</label>
         <input
           type="text"
@@ -89,8 +89,8 @@ function ShipmentForm({
           onChange={handleChange}
           className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5"
         />
-      </div>
-      <div>
+      </div> */}
+      {/* <div>
         <label>Tax Identification Number:</label>
         <input
           type="text"
@@ -99,8 +99,8 @@ function ShipmentForm({
           onChange={handleChange}
           className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5"
         />
-      </div>
-      <div>
+      </div> */}
+      {/* <div>
         <label>Phone Number:</label>
         <input
           type="text"
@@ -109,8 +109,8 @@ function ShipmentForm({
           onChange={handleChange}
           className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5"
         />
-      </div>
-      <div>
+      </div> */}
+      {/* <div>
         <label>Fax Number:</label>
         <input
           type="text"
@@ -119,8 +119,8 @@ function ShipmentForm({
           onChange={handleChange}
           className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5"
         />
-      </div>
-      <div>
+      </div> */}
+      {/* <div>
         <label>Address Line:</label>
         <input
           type="text"
@@ -129,8 +129,8 @@ function ShipmentForm({
           onChange={handleChange}
           className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5"
         />
-      </div>
-      <div>
+      </div> */}
+      {/* <div>
         <label>City:</label>
         <input
           type="text"
@@ -139,8 +139,8 @@ function ShipmentForm({
           onChange={handleChange}
           className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5"
         />
-      </div>
-      <div>
+      </div> */}
+      {/* <div>
         <label>State:</label>
         <input
           type="text"
@@ -149,8 +149,8 @@ function ShipmentForm({
           onChange={handleChange}
           className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5"
         />
-      </div>
-      <div>
+      </div> */}
+      {/* <div>
         <label>Postal Code:</label>
         <input
           type="text"
@@ -159,8 +159,8 @@ function ShipmentForm({
           onChange={handleChange}
           className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5"
         />
-      </div>
-      <div>
+      </div> */}
+      {/* <div>
         <label>Country Code:</label>
         <input
           type="text"
@@ -169,11 +169,11 @@ function ShipmentForm({
           onChange={handleChange}
           className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5"
         />
-      </div>
+      </div> */}
 
       {/* Receiver Information */}
       <h2 className="text-xl font-semibold mt-4">Receiver Information</h2>
-      <div>
+      {/* <div>
         <label>Receiver Name:</label>
         <input
           type="text"
@@ -182,8 +182,8 @@ function ShipmentForm({
           onChange={handleChange}
           className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5"
         />
-      </div>
-      <div>
+      </div> */}
+      {/* <div>
         <label>Attention Name:</label>
         <input
           type="text"
@@ -192,8 +192,8 @@ function ShipmentForm({
           onChange={handleChange}
           className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5"
         />
-      </div>
-      <div>
+      </div> */}
+      {/* <div>
         <label>Phone Number:</label>
         <input
           type="text"
@@ -202,8 +202,8 @@ function ShipmentForm({
           onChange={handleChange}
           className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5"
         />
-      </div>
-      <div>
+      </div> */}
+      {/* <div>
         <label>Address Line:</label>
         <input
           type="text"
@@ -212,8 +212,8 @@ function ShipmentForm({
           onChange={handleChange}
           className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5"
         />
-      </div>
-      <div>
+      </div> */}
+      {/* <div>
         <label>City:</label>
         <input
           type="text"
@@ -222,8 +222,8 @@ function ShipmentForm({
           onChange={handleChange}
           className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5"
         />
-      </div>
-      <div>
+      </div> */}
+      {/* <div>
         <label>State:</label>
         <input
           type="text"
@@ -232,8 +232,8 @@ function ShipmentForm({
           onChange={handleChange}
           className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5"
         />
-      </div>
-      <div>
+      </div> */}
+      {/* <div>
         <label>Postal Code:</label>
         <input
           type="text"
@@ -242,8 +242,8 @@ function ShipmentForm({
           onChange={handleChange}
           className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5"
         />
-      </div>
-      <div>
+      </div> */}
+      {/* <div>
         <label>Country Code:</label>
         <input
           type="text"
@@ -252,7 +252,7 @@ function ShipmentForm({
           onChange={handleChange}
           className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5"
         />
-      </div>
+      </div> */}
 
       {/* Ship From Information */}
       <h2 className="text-xl font-semibold mt-4">Ship From Information</h2>
@@ -359,7 +359,7 @@ function ShipmentForm({
           className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5"
         />
       </div>
-      <div>
+      {/* <div>
         <label>Dimensions (inches):</label>
         <div className="flex gap-4">
           <input
@@ -387,8 +387,8 @@ function ShipmentForm({
             className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5"
           />
         </div>
-      </div>
-      <div>
+      </div> */}
+      {/* <div>
         <label>Package Weight (lbs):</label>
         <input
           type="text"
@@ -397,8 +397,8 @@ function ShipmentForm({
           onChange={handleChange}
           className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5"
         />
-      </div>
-      <div>
+      </div> */}
+      {/* <div>
         <label>Service Type:</label>
         <select
           name="serviceType"
@@ -410,7 +410,7 @@ function ShipmentForm({
           <option value="02">2nd Day Air</option>
           <option value="01">Next Day Air</option>
         </select>
-      </div>
+      </div> */}
     </div>
   );
 }

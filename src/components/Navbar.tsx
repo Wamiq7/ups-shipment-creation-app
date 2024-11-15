@@ -1,10 +1,10 @@
 "use client";
 import Link from "next/link";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Button } from "./ui/button";
 
 export default function Navbar() {
-  const [isToken, setIsToken] = React.useState("");
+  const [isToken, setIsToken] = useState("");
 
   useEffect(() => {
     async function isTokenInCookies() {
@@ -54,7 +54,6 @@ export default function Navbar() {
               </span>
             </Link>
           </div>
-
           <div className="flex items-center space-x-4">
             {!isToken ? (
               <Button

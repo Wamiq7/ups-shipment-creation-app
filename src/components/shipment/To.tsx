@@ -11,8 +11,14 @@ const themeOptions = [
   { value: "system", label: "System" },
 ];
 
-export default function To() {
+export default function To({ shipmentData, setShipmentData }) {
   const [isEdit, setIsEdit] = useState(false);
+
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
+    setShipmentData({ ...shipmentData, [e.target.name]: e.target.value });
+  };
 
   return (
     <Card>
@@ -23,7 +29,7 @@ export default function To() {
             <CardDescription className="text-black font-normal text-xs lg:text-sm">
               Saved Addresses
             </CardDescription>
-            <BasicSelect options={themeOptions} placeholder="Theme" />
+            <BasicSelect value="" options={themeOptions} placeholder="Theme" />
             <button
               className="text-c-blue-accent text-xs hover:underline"
               onClick={() => {
@@ -39,6 +45,7 @@ export default function To() {
                     Country or Territory *
                   </Label>{" "}
                   <BasicSelect
+                    value=""
                     options={themeOptions}
                     placeholder="Country or Territory"
                   />
@@ -48,66 +55,109 @@ export default function To() {
                     <Label htmlFor="email" className="text-xs">
                       Full Name or Company Name *
                     </Label>
-                    <Input type="email" id="email" placeholder="Email" />
+                    <Input
+                      type="text"
+                      name="receiverName"
+                      value={shipmentData.receiverName}
+                      onChange={handleChange}
+                    />
                   </div>
                   <div className="grid w-full max-w-sm items-center gap-1.5">
                     <Label htmlFor="email" className="text-xs">
-                      Contact Name
+                      Attention Name
                     </Label>
-                    <Input type="email" id="email" placeholder="Email" />
+                    <Input
+                      type="text"
+                      name="receiverAttention"
+                      value={shipmentData.receiverAttention}
+                      onChange={handleChange}
+                    />
                   </div>
                 </div>
                 <div className="grid w-full max-w-sm items-center gap-1.5">
                   <Label htmlFor="email" className="text-xs">
                     Address Line 1 *
                   </Label>
-                  <Input type="email" id="email" placeholder="Email" />
+                  <Input
+                    type="text"
+                    name="receiverAddressLine"
+                    value={shipmentData.receiverAddressLine}
+                    onChange={handleChange}
+                  />
                 </div>
                 <div className="flex gap-2">
                   <div className="grid w-full max-w-sm items-center gap-1.5">
                     <Label htmlFor="email" className="text-xs">
                       Zip Code *
                     </Label>
-                    <Input type="email" id="email" placeholder="Email" />
+                    <Input
+                      type="text"
+                      name="receiverPostalCode"
+                      value={shipmentData.receiverPostalCode}
+                      onChange={handleChange}
+                    />
                   </div>
                   <div className="grid w-full max-w-sm items-center gap-1.5">
                     <Label htmlFor="email" className="text-xs">
                       City *
                     </Label>
-                    <Input type="email" id="email" placeholder="Email" />
+                    <Input
+                      type="text"
+                      name="receiverCity"
+                      value={shipmentData.receiverCity}
+                      onChange={handleChange}
+                    />
                   </div>
                   <div className="grid w-full max-w-sm items-center gap-1.5">
                     <Label htmlFor="email" className="text-xs">
                       State *
                     </Label>
-                    <BasicSelect
+                    <Input
+                      type="text"
+                      name="receiverState"
+                      value={shipmentData.receiverState}
+                      onChange={handleChange}
+                    />
+                    {/* <BasicSelect
+                      value=""
                       options={themeOptions}
                       placeholder="Country or Territory"
-                    />
+                    /> */}
                   </div>
                 </div>
                 <div className="flex gap-2">
                   <div className="grid w-full max-w-sm items-center gap-1.5">
                     <Label htmlFor="email" className="text-xs">
-                      Email
+                      Country Code
                     </Label>
-                    <Input type="email" id="email" placeholder="Email" />
+                    <Input
+                      type="text"
+                      name="receiverCountry"
+                      value={shipmentData.receiverCountry}
+                      onChange={handleChange}
+                    />
                   </div>
-                  <div className="grid w-full max-w-sm items-center gap-1.5">
+                  {/* <div className="grid w-full max-w-sm items-center gap-1.5">
                     <Label htmlFor="email" className="text-xs">
                       Phone *
                     </Label>
-                    <Input type="email" id="email" placeholder="Email" />
+                    <Input
+                      type="text"
+                      name="receiverPhone"
+                      value={shipmentData.receiverPhone}
+                      onChange={handleChange}
+                    />
                   </div>
                   <div className="grid w-full max-w-sm items-center gap-1.5">
                     <Label htmlFor="email" className="text-xs">
                       Extension
                     </Label>{" "}
                     <BasicSelect
+                      value=""
                       options={themeOptions}
                       placeholder="Country or Territory"
                     />
-                  </div>
+                  </div> */}
                 </div>
                 <div className="flex gap-2 w-full justify-end">
                   <div className="flex items-center space-x-2">
