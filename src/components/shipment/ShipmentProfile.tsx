@@ -7,7 +7,10 @@ import { CreateShipmentProfile } from "../CreateShipmentProfile";
 import { useEffect, useState } from "react";
 
 export default function ShipmentProfile() {
-  const [shipmentProfiles, setShipmentProfiles] = useState([]);
+  const [shipmentProfiles, setShipmentProfiles] = useState<any[]>([]);
+  const [selectedShipmentProfileId, setSelectedShipmentProfileId] = useState(
+    localStorage.getItem("selectedShipmentProfileId") || ""
+  );
   const [selectedShipmentProfile, setSelectedShipmentProfile] = useState(
     localStorage.getItem("selectedShipmentProfile") || ""
   );
@@ -37,8 +40,22 @@ export default function ShipmentProfile() {
   }));
 
   useEffect(() => {
-    localStorage.setItem("selectedShipmentProfile", selectedShipmentProfile);
+    if (selectedShipmentProfile) {
+      const selectedProfileId = shipmentProfiles.find(
+        (profile: any) => profile.name === selectedShipmentProfile
+      )?._id;
+
+      localStorage.setItem("selectedShipmentProfileId", selectedProfileId);
+      localStorage.setItem("selectedShipmentProfile", selectedShipmentProfile);
+    }
   }, [selectedShipmentProfile]);
+
+  useEffect(() => {
+    localStorage.setItem(
+      "selectedShipmentProfileId",
+      selectedShipmentProfileId
+    );
+  }, [selectedShipmentProfileId]);
 
   return (
     <Card>

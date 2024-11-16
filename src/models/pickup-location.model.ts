@@ -1,8 +1,8 @@
 import mongoose from "mongoose";
 
-export const addressBookSchema = new mongoose.Schema(
+export const pickupLocationSchema = new mongoose.Schema(
   {
-    texIdentificationNumber: {
+    countryOrTerritory: {
       type: String,
       required: true,
     },
@@ -30,15 +30,15 @@ export const addressBookSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    faxNumber: {
+    email: {
       type: String,
       required: true,
     },
-    phoneNumber: {
+    phone: {
       type: String,
       required: true,
     },
-    country: {
+    extension: {
       type: String,
       required: true,
     },
@@ -51,8 +51,8 @@ export const addressBookSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-const AddressBook =
-  mongoose.models?.AddressBook ||
-  mongoose.model("AddressBook", addressBookSchema);
+const PickupLocation =
+  mongoose.models?.PickupLocation ||
+  mongoose.model("PickupLocation", pickupLocationSchema);
 
-export { AddressBook };
+export { PickupLocation };

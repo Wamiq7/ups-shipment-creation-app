@@ -1,9 +1,12 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Card, CardContent, CardDescription, CardTitle } from "../ui/card";
 import BasicSelect from "../BasicSelect";
 import { Label } from "../ui/label";
 import { Input } from "../ui/input";
 import { Checkbox } from "../ui/checkbox";
+import axios from "axios";
+import { toast } from "sonner";
+import { Button } from "../ui/button";
 
 const themeOptions = [
   { value: "light", label: "Light" },
@@ -13,12 +16,72 @@ const themeOptions = [
 
 export default function To({ shipmentData, setShipmentData }) {
   const [isEdit, setIsEdit] = useState(false);
+  const [savedAddress, setSavedAddress] = useState(false);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
     setShipmentData({ ...shipmentData, [e.target.name]: e.target.value });
   };
+
+  const createAddressBookToEntry = async () => {
+    try {
+      const config = {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      };
+
+      const addressData = {
+        fullName: shipmentData.receiverName,
+        attentionName: shipmentData.receiverAttention,
+        addressLineOne: shipmentData.receiverAddressLine,
+        zipCode: shipmentData.receiverPostalCode,
+        city: shipmentData.receiverCity,
+        state: shipmentData.receiverState,
+        countryCode: shipmentData.receiverCountry,
+        profileId: localStorage.getItem("selectedShipmentProfileId"),
+      };
+
+      const response = await axios.post(
+        "/api/address-book/to",
+        addressData,
+        config
+      );
+      toast.success(response.data.message);
+    } catch (error) {
+      console.error("Error creating address book entry:", error);
+      toast.error("An error occurred while creating the address book entry.");
+    }
+  };
+
+  const getTos = async () => {
+    try {
+      const config = {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      };
+
+      const response = await axios.get(
+        `/api/address-book/to?profileId=${localStorage.getItem(
+          "selectedShipmentProfileId"
+        )}`,
+        config
+      );
+
+      setSavedAddress(response.data);
+    } catch (error) {
+      console.error("Error creating address book entry:", error);
+      toast.error("An error occurred while creating the address book entry.");
+    }
+  };
+
+  useEffect(() => {
+    getTos();
+  }, []);
+
+  // console.log({ to: savedAddress });
 
   return (
     <Card>
@@ -40,7 +103,7 @@ export default function To({ shipmentData, setShipmentData }) {
             </button>
             {isEdit ? (
               <div className="flex flex-col gap-3">
-                <div className="grid w-full max-w-sm items-center gap-1.5">
+                {/* <div className="grid w-full max-w-sm items-center gap-1.5">
                   <Label htmlFor="email" className="text-xs lg:text-sm">
                     Country or Territory *
                   </Label>{" "}
@@ -49,7 +112,7 @@ export default function To({ shipmentData, setShipmentData }) {
                     options={themeOptions}
                     placeholder="Country or Territory"
                   />
-                </div>
+                </div> */}
                 <div className="flex gap-2">
                   <div className="grid w-full max-w-sm items-center gap-1.5">
                     <Label htmlFor="email" className="text-xs">
@@ -160,15 +223,14 @@ export default function To({ shipmentData, setShipmentData }) {
                   </div> */}
                 </div>
                 <div className="flex gap-2 w-full justify-end">
-                  <div className="flex items-center space-x-2">
-                    <Checkbox id="terms" />
-                    <label
-                      htmlFor="terms"
-                      className="text-xs lg:text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                    >
-                      Save as New Address book
-                    </label>
-                  </div>
+                  <Button
+                    variant={"default"}
+                    onClick={() => {
+                      createAddressBookToEntry();
+                    }}
+                  >
+                    Save as New Address book
+                  </Button>
                 </div>
               </div>
             ) : (

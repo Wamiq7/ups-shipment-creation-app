@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { connectToMongoDB } from "@/lib/db";
-import { AddressBook } from "@/models/address-book.model";
+import { To } from "@/models/to.model";
 
 export async function POST(request: Request) {
   try {
@@ -8,24 +8,21 @@ export async function POST(request: Request) {
 
     await connectToMongoDB();
 
-    const newAddressBookEntry = await AddressBook.create({
-      texIdentificationNumber: body.texIdentificationNumber,
+    const newAddressBookToEntry = await To.create({
       fullName: body.fullName,
-      contactName: body.contactName,
+      attentionName: body.attentionName,
       addressLineOne: body.addressLineOne,
       zipCode: body.zipCode,
       city: body.city,
       state: body.state,
-      faxNumber: body.faxNumber,
-      phoneNumber: body.phoneNumber,
-      country: body.country,
+      countryCode: body.countryCode,
       profileId: body.profileId,
     });
 
     return NextResponse.json(
       {
-        message: "Address book entry created successfully",
-        data: newAddressBookEntry,
+        message: "Address book TO entry created successfully",
+        data: newAddressBookToEntry,
       },
       { status: 201 }
     );
@@ -52,9 +49,9 @@ export async function GET(request: Request) {
       );
     }
 
-    const froms = await AddressBook.find({ profileId });
+    const tos = await To.find({ profileId });
 
-    return NextResponse.json(froms, { status: 200 });
+    return NextResponse.json(tos, { status: 200 });
   } catch (error: any) {
     console.error(error);
     return NextResponse.json(

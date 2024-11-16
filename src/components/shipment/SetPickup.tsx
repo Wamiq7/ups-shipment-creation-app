@@ -2,16 +2,34 @@ import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Textarea } from "../ui/textarea";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Input } from "../ui/input";
 import BasicSelect from "../BasicSelect";
 import { Checkbox } from "../ui/checkbox";
 import { CalendarInput } from "../CalenderInput";
+import axios from "axios";
+import { toast } from "sonner";
+import { set } from "mongoose";
+import { Button } from "../ui/button";
 
 export default function SetPickup() {
   const [isEdit, setIsEdit] = useState(false);
   const [isEdit2, setIsEdit2] = useState(false);
   const [onCallPickup, setOnCallPickup] = useState(false);
+  const [savedAddress, setSavedAddress] = useState();
+
+  const [pickupLocation, setPickupLocation] = useState({
+    countryOrTerritory: "",
+    fullName: "",
+    contactName: "",
+    addressLineOne: "",
+    zipCode: "",
+    city: "",
+    state: "",
+    email: "",
+    phone: "",
+    extension: "",
+  });
 
   const handlePickupChange = (value) => {
     setOnCallPickup(value === "option-two");
@@ -22,6 +40,68 @@ export default function SetPickup() {
     { value: "dark", label: "Dark" },
     { value: "system", label: "System" },
   ];
+
+  const createPickupLocation = async () => {
+    try {
+      const config = {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      };
+
+      const addressData = {
+        countryOrTerritory: pickupLocation.countryOrTerritory,
+        fullName: pickupLocation.fullName,
+        contactName: pickupLocation.contactName,
+        addressLineOne: pickupLocation.addressLineOne,
+        zipCode: pickupLocation.zipCode,
+        city: pickupLocation.city,
+        state: pickupLocation.state,
+        email: pickupLocation.email,
+        phone: pickupLocation.phone,
+        extension: pickupLocation.extension,
+        profileId: localStorage.getItem("selectedShipmentProfileId"),
+      };
+
+      const response = await axios.post(
+        "/api/address-book/pickup-location",
+        addressData,
+        config
+      );
+      toast.success(response.data.message);
+    } catch (error) {
+      console.error("Error creating address book entry:", error);
+      toast.error("An error occurred while creating the address book entry.");
+    }
+  };
+
+  const getPickupLocations = async () => {
+    try {
+      const config = {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      };
+
+      const response = await axios.get(
+        `/api/address-book/pickup-location?profileId=${localStorage.getItem(
+          "selectedShipmentProfileId"
+        )}`,
+        config
+      );
+
+      setSavedAddress(response.data.data);
+    } catch (error) {
+      console.error("Error creating address book entry:", error);
+      toast.error("An error occurred while creating the address book entry.");
+    }
+  };
+
+  useEffect(() => {
+    getPickupLocations();
+  }, []);
+
+  // console.log({ pickupLocation: savedAddress });
 
   return (
     <Card>
@@ -75,6 +155,13 @@ export default function SetPickup() {
                     <BasicSelect
                       options={themeOptions}
                       placeholder="Country or Territory"
+                      value={pickupLocation.countryOrTerritory}
+                      onChange={(value) =>
+                        setPickupLocation({
+                          ...pickupLocation,
+                          countryOrTerritory: value,
+                        })
+                      }
                     />
                   </div>
                   <div className="flex gap-2">
@@ -82,33 +169,77 @@ export default function SetPickup() {
                       <Label htmlFor="email" className="text-xs">
                         Full Name or Company Name *
                       </Label>
-                      <Input type="email" id="email" placeholder="Email" />
+                      <Input
+                        type="text"
+                        placeholder=""
+                        onChange={(e) =>
+                          setPickupLocation({
+                            ...pickupLocation,
+                            fullName: e.target.value,
+                          })
+                        }
+                      />
                     </div>
                     <div className="grid w-full max-w-sm items-center gap-1.5">
                       <Label htmlFor="email" className="text-xs">
                         Contact Name
                       </Label>
-                      <Input type="email" id="email" placeholder="Email" />
+                      <Input
+                        type="text"
+                        placeholder=""
+                        onChange={(e) =>
+                          setPickupLocation({
+                            ...pickupLocation,
+                            contactName: e.target.value,
+                          })
+                        }
+                      />
                     </div>
                   </div>
                   <div className="grid w-full max-w-sm items-center gap-1.5">
                     <Label htmlFor="email" className="text-xs">
                       Address Line 1 *
                     </Label>
-                    <Input type="email" id="email" placeholder="Email" />
+                    <Input
+                      type="text"
+                      placeholder=""
+                      onChange={(e) =>
+                        setPickupLocation({
+                          ...pickupLocation,
+                          addressLineOne: e.target.value,
+                        })
+                      }
+                    />
                   </div>
                   <div className="flex gap-2">
                     <div className="grid w-full max-w-sm items-center gap-1.5">
                       <Label htmlFor="email" className="text-xs">
                         Zip Code *
                       </Label>
-                      <Input type="email" id="email" placeholder="Email" />
+                      <Input
+                        type="text"
+                        placeholder=""
+                        onChange={(e) =>
+                          setPickupLocation({
+                            ...pickupLocation,
+                            zipCode: e.target.value,
+                          })
+                        }
+                      />
                     </div>
                     <div className="grid w-full max-w-sm items-center gap-1.5">
                       <Label htmlFor="email" className="text-xs">
                         City *
                       </Label>
-                      <Input type="email" id="email" placeholder="Email" />
+                      <Input
+                        placeholder=""
+                        onChange={(e) =>
+                          setPickupLocation({
+                            ...pickupLocation,
+                            city: e.target.value,
+                          })
+                        }
+                      />
                     </div>
                     <div className="grid w-full max-w-sm items-center gap-1.5">
                       <Label htmlFor="email" className="text-xs">
@@ -117,6 +248,13 @@ export default function SetPickup() {
                       <BasicSelect
                         options={themeOptions}
                         placeholder="Country or Territory"
+                        value={pickupLocation.state}
+                        onChange={(value) =>
+                          setPickupLocation({
+                            ...pickupLocation,
+                            state: value,
+                          })
+                        }
                       />
                     </div>
                   </div>
@@ -125,13 +263,32 @@ export default function SetPickup() {
                       <Label htmlFor="email" className="text-xs">
                         Email
                       </Label>
-                      <Input type="email" id="email" placeholder="Email" />
+                      <Input
+                        type="email"
+                        id="email"
+                        placeholder=""
+                        onChange={(e) =>
+                          setPickupLocation({
+                            ...pickupLocation,
+                            email: e.target.value,
+                          })
+                        }
+                      />
                     </div>
                     <div className="grid w-full max-w-sm items-center gap-1.5">
                       <Label htmlFor="email" className="text-xs">
                         Phone *
                       </Label>
-                      <Input type="email" id="email" placeholder="Email" />
+                      <Input
+                        type="text"
+                        placeholder=""
+                        onChange={(e) =>
+                          setPickupLocation({
+                            ...pickupLocation,
+                            phone: e.target.value,
+                          })
+                        }
+                      />
                     </div>
                     <div className="grid w-full max-w-sm items-center gap-1.5">
                       <Label htmlFor="email" className="text-xs">
@@ -140,6 +297,13 @@ export default function SetPickup() {
                       <BasicSelect
                         options={themeOptions}
                         placeholder="Country or Territory"
+                        value={pickupLocation.extension}
+                        onChange={(value) =>
+                          setPickupLocation({
+                            ...pickupLocation,
+                            extension: value,
+                          })
+                        }
                       />
                     </div>
                   </div>
@@ -153,7 +317,13 @@ export default function SetPickup() {
                         Save Edits to this Address
                       </label>
                     </div>
-                    <div className="flex items-center space-x-2">
+                    <Button
+                      variant={"default"}
+                      onClick={() => createPickupLocation()}
+                    >
+                      Save as New Address book
+                    </Button>
+                    {/* <div className="flex items-center space-x-2">
                       <Checkbox id="terms" />
                       <label
                         htmlFor="terms"
@@ -161,7 +331,7 @@ export default function SetPickup() {
                       >
                         Save as New Address book
                       </label>
-                    </div>
+                    </div> */}
                   </div>
                 </div>
               ) : (
@@ -193,6 +363,7 @@ export default function SetPickup() {
                     <BasicSelect
                       options={themeOptions}
                       placeholder="Country or Territory"
+                      value=""
                     />
                   </div>
                   <div className="grid w-full max-w-sm items-center gap-1.5">
@@ -202,6 +373,7 @@ export default function SetPickup() {
                     <BasicSelect
                       options={themeOptions}
                       placeholder="Country or Territory"
+                      value=""
                     />
                   </div>
                   <div className="grid w-full max-w-sm items-center gap-1.5">

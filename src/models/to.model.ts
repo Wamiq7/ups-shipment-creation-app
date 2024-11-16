@@ -1,16 +1,12 @@
 import mongoose from "mongoose";
 
-export const addressBookSchema = new mongoose.Schema(
+export const toSchema = new mongoose.Schema(
   {
-    texIdentificationNumber: {
-      type: String,
-      required: true,
-    },
     fullName: {
       type: String,
       required: true,
     },
-    contactName: {
+    attentionName: {
       type: String,
       required: true,
     },
@@ -30,15 +26,7 @@ export const addressBookSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    faxNumber: {
-      type: String,
-      required: true,
-    },
-    phoneNumber: {
-      type: String,
-      required: true,
-    },
-    country: {
+    countryCode: {
       type: String,
       required: true,
     },
@@ -51,8 +39,6 @@ export const addressBookSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-const AddressBook =
-  mongoose.models?.AddressBook ||
-  mongoose.model("AddressBook", addressBookSchema);
+const To = mongoose.models?.To || mongoose.model("To", toSchema);
 
-export { AddressBook };
+export { To };

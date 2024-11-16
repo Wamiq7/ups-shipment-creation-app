@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Card, CardContent, CardDescription, CardTitle } from "../ui/card";
 import BasicSelect from "../BasicSelect";
 import { Label } from "../ui/label";
@@ -16,6 +16,7 @@ const themeOptions = [
 
 export default function From({ shipmentData, setShipmentData }) {
   const [isEdit, setIsEdit] = useState(false);
+  const [savedAddress, setSavedAddress] = useState();
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -42,6 +43,7 @@ export default function From({ shipmentData, setShipmentData }) {
         faxNumber: shipmentData.senderFax,
         phoneNumber: shipmentData.senderPhone,
         country: shipmentData.senderCountry,
+        profileId: localStorage.getItem("selectedShipmentProfileId"),
       };
 
       const response = await axios.post(
@@ -55,6 +57,34 @@ export default function From({ shipmentData, setShipmentData }) {
       toast.error("An error occurred while creating the address book entry.");
     }
   };
+
+  const getFroms = async () => {
+    try {
+      const config = {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      };
+
+      const response = await axios.get(
+        `/api/address-book?profileId=${localStorage.getItem(
+          "selectedShipmentProfileId"
+        )}`,
+        config
+      );
+
+      setSavedAddress(response.data);
+    } catch (error) {
+      console.error("Error creating address book entry:", error);
+      toast.error("An error occurred while creating the address book entry.");
+    }
+  };
+
+  useEffect(() => {
+    getFroms();
+  }, []);
+
+  // console.log({ from: savedAddress });
 
   return (
     <Card>

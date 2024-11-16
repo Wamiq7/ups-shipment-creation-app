@@ -107,8 +107,6 @@ export default function PackageShipmentDetails({
   );
   const selectedLabel = selectedOption?.label || "Select an option";
 
-  console.log("shipmentData", selectedLabel);
-
   return (
     <Card>
       <CardHeader className="bg-c-gray-accent-head rounded-t-xl px-6 py-2 text-white">
