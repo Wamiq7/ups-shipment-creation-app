@@ -1,22 +1,16 @@
 import React, { useEffect, useState } from "react";
 import { Card, CardContent, CardDescription, CardTitle } from "../ui/card";
-import BasicSelect from "../BasicSelect";
 import { Label } from "../ui/label";
 import { Input } from "../ui/input";
-import { Checkbox } from "../ui/checkbox";
-import axios from "axios";
 import { toast } from "sonner";
 import { Button } from "../ui/button";
-
-const themeOptions = [
-  { value: "light", label: "Light" },
-  { value: "dark", label: "Dark" },
-  { value: "system", label: "System" },
-];
+import BasicSelect from "../BasicSelect";
+import axios from "axios";
 
 export default function From({ shipmentData, setShipmentData }) {
   const [isEdit, setIsEdit] = useState(false);
-  const [savedAddress, setSavedAddress] = useState();
+  const [savedAddress, setSavedAddress] = useState<any>([]);
+  const [selectedAddress, setSelectedAddress] = useState("");
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -84,7 +78,44 @@ export default function From({ shipmentData, setShipmentData }) {
     getFroms();
   }, []);
 
-  // console.log({ from: savedAddress });
+  const transformedOptions = savedAddress?.map((item: any) => ({
+    value: item._id,
+    label: item.contactName,
+  }));
+
+  const updateAddressBookEntry = async () => {
+    try {
+      const config = {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      };
+
+      const addressData = {
+        texIdentificationNumber: shipmentData.senderTaxId,
+        fullName: shipmentData.senderName,
+        contactName: shipmentData.senderAttention,
+        addressLineOne: shipmentData.senderAddressLine,
+        zipCode: shipmentData.senderPostalCode,
+        city: shipmentData.senderCity,
+        state: shipmentData.senderState,
+        faxNumber: shipmentData.senderFax,
+        phoneNumber: shipmentData.senderPhone,
+        country: shipmentData.senderCountry,
+        profileId: localStorage.getItem("selectedShipmentProfileId"),
+      };
+
+      const response = await axios.patch(
+        `/api/address-book/${selectedAddress}`,
+        addressData,
+        config
+      );
+      toast.success(response.data.message);
+    } catch (error) {
+      console.error("Error creating address book entry:", error);
+      toast.error("An error occurred while creating the address book entry.");
+    }
+  };
 
   return (
     <Card>
@@ -97,7 +128,32 @@ export default function From({ shipmentData, setShipmentData }) {
             <CardDescription className="text-black font-normal text-xs lg:text-sm">
               My Address
             </CardDescription>
-            <BasicSelect value="" options={themeOptions} placeholder="Theme" />
+            <BasicSelect
+              value={selectedAddress}
+              options={transformedOptions}
+              placeholder=""
+              onChange={(value: string) => {
+                const selectedAddressData = savedAddress.find(
+                  (item: any) => item._id === value
+                );
+
+                setShipmentData({
+                  ...shipmentData,
+                  senderTaxId: selectedAddressData.texIdentificationNumber,
+                  senderName: selectedAddressData.fullName,
+                  senderAttention: selectedAddressData.contactName,
+                  senderAddressLine: selectedAddressData.addressLineOne,
+                  senderPostalCode: selectedAddressData.zipCode,
+                  senderCity: selectedAddressData.city,
+                  senderState: selectedAddressData.state,
+                  senderFax: selectedAddressData.faxNumber,
+                  senderPhone: selectedAddressData.phoneNumber,
+                  senderCountry: selectedAddressData.country,
+                });
+
+                setSelectedAddress(value);
+              }}
+            />
             <button
               className="text-c-blue-accent text-xs hover:underline"
               onClick={() => {
@@ -109,13 +165,6 @@ export default function From({ shipmentData, setShipmentData }) {
             {isEdit ? (
               <div className="flex flex-col gap-3">
                 <div className="grid w-full max-w-sm items-center gap-1.5">
-                  {/* <Label htmlFor="email" className="text-xs lg:text-sm">
-                    Country or Territory*
-                  </Label>
-                  <BasicSelect
-                    options={themeOptions}
-                    placeholder="Country or Territory"
-                  /> */}
                   <Label htmlFor="email" className="text-xs lg:text-sm">
                     Tax Identification Number
                   </Label>
@@ -201,10 +250,6 @@ export default function From({ shipmentData, setShipmentData }) {
                       onChange={handleChange}
                       placeholder="Enter state"
                     />
-                    {/* <BasicSelect
-                      options={themeOptions}
-                      placeholder="Country or Territory"
-                    /> */}
                   </div>
                 </div>
                 <div className="flex flex-col gap-2">
@@ -243,22 +288,18 @@ export default function From({ shipmentData, setShipmentData }) {
                       onChange={handleChange}
                       placeholder="Enter country code"
                     />
-                    {/* <BasicSelect
-                      options={themeOptions}
-                      placeholder="Country or Territory"
-                    /> */}
                   </div>
                 </div>
-                <div className="flex gap-2">
-                  <div className="flex items-center space-x-2">
-                    <Checkbox id="terms" />
-                    <label
-                      htmlFor="terms"
-                      className="text-xs lg:text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                    >
-                      Save Edits to this Address
-                    </label>
-                  </div>
+                <div className="flex flex-col gap-2">
+                  <Button
+                    disabled={selectedAddress === ""}
+                    variant={selectedAddress === "" ? "outline" : "default"}
+                    onClick={() => {
+                      updateAddressBookEntry();
+                    }}
+                  >
+                    Save Edits to this Address
+                  </Button>
                   <Button
                     variant={"default"}
                     onClick={() => {
@@ -267,15 +308,6 @@ export default function From({ shipmentData, setShipmentData }) {
                   >
                     Save as New Address book
                   </Button>
-                  {/* <div className="flex items-center space-x-2">
-                    <Checkbox id="terms" />
-                    <label
-                      htmlFor="terms"
-                      className="text-xs lg:text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                    >
-                     
-                    </label>
-                  </div> */}
                 </div>
               </div>
             ) : (
