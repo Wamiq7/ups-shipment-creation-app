@@ -7,6 +7,7 @@ import { Checkbox } from "../ui/checkbox";
 import axios from "axios";
 import { toast } from "sonner";
 import { Button } from "../ui/button";
+import { set } from "mongoose";
 
 const themeOptions = [
   { value: "light", label: "Light" },
@@ -16,7 +17,8 @@ const themeOptions = [
 
 export default function To({ shipmentData, setShipmentData }) {
   const [isEdit, setIsEdit] = useState(false);
-  const [savedAddress, setSavedAddress] = useState(false);
+  const [savedAddress, setSavedAddress] = useState<any>([]);
+  const [selectedAddress, setSelectedAddress] = useState("");
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -81,7 +83,41 @@ export default function To({ shipmentData, setShipmentData }) {
     getTos();
   }, []);
 
-  // console.log({ to: savedAddress });
+  const transformedOptions = savedAddress?.map((item: any) => ({
+    value: item._id,
+    label: item.fullName,
+  }));
+
+  const updateAddressBookToEntry = async () => {
+    try {
+      const config = {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      };
+
+      const addressData = {
+        fullName: shipmentData.receiverName,
+        attentionName: shipmentData.receiverAttention,
+        addressLineOne: shipmentData.receiverAddressLine,
+        zipCode: shipmentData.receiverPostalCode,
+        city: shipmentData.receiverCity,
+        state: shipmentData.receiverState,
+        countryCode: shipmentData.receiverCountry,
+        profileId: localStorage.getItem("selectedShipmentProfileId"),
+      };
+
+      const response = await axios.patch(
+        `/api/address-book/to/${selectedAddress}`,
+        addressData,
+        config
+      );
+      toast.success(response.data.message);
+    } catch (error) {
+      console.error("Error updating address book entry:", error);
+      toast.error("An error occurred while updating the address book entry.");
+    }
+  };
 
   return (
     <Card>
@@ -92,7 +128,29 @@ export default function To({ shipmentData, setShipmentData }) {
             <CardDescription className="text-black font-normal text-xs lg:text-sm">
               Saved Addresses
             </CardDescription>
-            <BasicSelect value="" options={themeOptions} placeholder="Theme" />
+            <BasicSelect
+              value={selectedAddress}
+              options={transformedOptions}
+              placeholder=""
+              onChange={(value: string) => {
+                const selectedAddressData = savedAddress.find(
+                  (item: any) => item._id === value
+                );
+
+                setShipmentData({
+                  ...shipmentData,
+                  receiverName: selectedAddressData.fullName,
+                  receiverAttention: selectedAddressData.attentionName,
+                  receiverAddressLine: selectedAddressData.addressLineOne,
+                  receiverPostalCode: selectedAddressData.zipCode,
+                  receiverCity: selectedAddressData.city,
+                  receiverState: selectedAddressData.state,
+                  receiverCountry: selectedAddressData.countryCode,
+                });
+
+                setSelectedAddress(value);
+              }}
+            />
             <button
               className="text-c-blue-accent text-xs hover:underline"
               onClick={() => {
@@ -103,16 +161,6 @@ export default function To({ shipmentData, setShipmentData }) {
             </button>
             {isEdit ? (
               <div className="flex flex-col gap-3">
-                {/* <div className="grid w-full max-w-sm items-center gap-1.5">
-                  <Label htmlFor="email" className="text-xs lg:text-sm">
-                    Country or Territory *
-                  </Label>{" "}
-                  <BasicSelect
-                    value=""
-                    options={themeOptions}
-                    placeholder="Country or Territory"
-                  />
-                </div> */}
                 <div className="flex gap-2">
                   <div className="grid w-full max-w-sm items-center gap-1.5">
                     <Label htmlFor="email" className="text-xs">
@@ -181,11 +229,6 @@ export default function To({ shipmentData, setShipmentData }) {
                       value={shipmentData.receiverState}
                       onChange={handleChange}
                     />
-                    {/* <BasicSelect
-                      value=""
-                      options={themeOptions}
-                      placeholder="Country or Territory"
-                    /> */}
                   </div>
                 </div>
                 <div className="flex gap-2">
@@ -200,29 +243,17 @@ export default function To({ shipmentData, setShipmentData }) {
                       onChange={handleChange}
                     />
                   </div>
-                  {/* <div className="grid w-full max-w-sm items-center gap-1.5">
-                    <Label htmlFor="email" className="text-xs">
-                      Phone *
-                    </Label>
-                    <Input
-                      type="text"
-                      name="receiverPhone"
-                      value={shipmentData.receiverPhone}
-                      onChange={handleChange}
-                    />
-                  </div>
-                  <div className="grid w-full max-w-sm items-center gap-1.5">
-                    <Label htmlFor="email" className="text-xs">
-                      Extension
-                    </Label>{" "}
-                    <BasicSelect
-                      value=""
-                      options={themeOptions}
-                      placeholder="Country or Territory"
-                    />
-                  </div> */}
                 </div>
-                <div className="flex gap-2 w-full justify-end">
+                <div className="flex flex-col gap-2">
+                  <Button
+                    disabled={selectedAddress === ""}
+                    variant={selectedAddress === "" ? "outline" : "default"}
+                    onClick={() => {
+                      updateAddressBookToEntry();
+                    }}
+                  >
+                    Save Edits to this Address
+                  </Button>
                   <Button
                     variant={"default"}
                     onClick={() => {
