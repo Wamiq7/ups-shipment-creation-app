@@ -33,6 +33,22 @@ export default function Login() {
     }));
   };
 
+  async function getToken() {
+    try {
+      const response = await fetch("/api/auth/getToken", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      const data = await response.json();
+
+      // window.location.reload();
+    } catch (error: any) {
+      console.error("Error fetching token:", error?.message);
+    }
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -44,6 +60,7 @@ export default function Login() {
       if (response.status === 200) {
         localStorage.setItem("token", response.data.token);
 
+        await getToken();
         router.push("/");
       }
     } catch (err: any) {

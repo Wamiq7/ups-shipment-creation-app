@@ -131,7 +131,7 @@ export default function To({ shipmentData, setShipmentData }) {
             <BasicSelect
               value={selectedAddress}
               options={transformedOptions}
-              placeholder=""
+              placeholder="Select saved address"
               onChange={(value: string) => {
                 const selectedAddressData = savedAddress.find(
                   (item: any) => item._id === value
