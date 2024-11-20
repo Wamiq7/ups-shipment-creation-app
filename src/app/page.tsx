@@ -46,12 +46,16 @@ export default function Home() {
     shipFromState: "GA",
     shipFromPostalCode: "30005",
     shipFromCountry: "US",
+    shipDate: new Date().toLocaleDateString(),
+    pkgeQuantity: "1",
+    packageType: "02",
     packageDescription: "Nails",
     packageLength: "10",
     packageWidth: "30",
     packageHeight: "45",
     packageWeight: "5",
     serviceType: "03",
+    isSignatureRequired: true,
   });
 
   useEffect(() => {
@@ -123,7 +127,6 @@ export default function Home() {
         return data;
       } else {
         const errorData = await response.json();
-        console.log(errorData);
       }
     } catch (error) {
       console.log(error);
@@ -164,9 +167,11 @@ export default function Home() {
     if (data.XAVResponse.Response.ResponseStatus.Description === "Success") {
       const data = await handleRatings(shipmentData);
       setRatingsResponse(data);
+
       toast.success("Ratings fetched successfully");
     }
   };
+  console.log({ shipmentData });
 
   const handleCreateShipment = async () => {
     try {
@@ -177,13 +182,14 @@ export default function Home() {
       alert("An error occurred while creating the shipment");
     }
   };
+  console.log(ratingsResponse);
 
   return (
     <div>
       <Navbar />
       <div className="px-3 lg:px-6 py-4 flex flex-col gap-3 lg:gap-4">
         <Toaster position="top-right" richColors />
-        <ShipmentProfile />
+        <ShipmentProfile rating={ratingsResponse?.RateResponse} />
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
           <div className="col-span-1 flex flex-col gap-4">
             <From
@@ -200,7 +206,7 @@ export default function Home() {
             <SetPickup />
           </div>
           <div>
-            <OtherOptionRate />
+            <OtherOptionRate rating={ratingsResponse?.RateResponse} />
             <div className="space-y-4 mt-5">
               <div className="flex items-center space-x-2">
                 <Checkbox id="terms" />
@@ -222,14 +228,17 @@ export default function Home() {
               </div>
               <Input type="email" placeholder="Email" className="bg-white" />
               <div className="mx-4">
-                <button className="border border-black text-gray-700 bg-c-orange text-2xl lg:text-3xl font-semibold px-5 py-4 w-full rounded-lg">
+                <button
+                  className="border border-black text-gray-700 bg-c-orange text-2xl lg:text-3xl font-semibold px-5 py-4 w-full rounded-lg"
+                  onClick={handleSubmit}
+                >
                   Review
                 </button>
               </div>
             </div>
           </div>
         </div>
-        {isToken ? (
+        {/* {isToken ? (
           <>
             {" "}
             {ratingsResponse ? (
@@ -286,7 +295,7 @@ export default function Home() {
           <h1 className="text-center my-4">
             Welcome, Authenticate to continue
           </h1>
-        )}
+        )} */}
         {label && (
           <div>
             <h3>Shipment Label</h3>

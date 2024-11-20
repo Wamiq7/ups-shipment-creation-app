@@ -29,12 +29,16 @@ export interface ShipmentData {
   shipFromState: string;
   shipFromPostalCode: string;
   shipFromCountry: string;
+  shipDate: string;
+  pkgeQuantity: string;
+  packageType: string;
   packageDescription: string;
   packageLength: string;
   packageWidth: string;
   packageHeight: string;
   packageWeight: string;
   serviceType: string;
+  isSignatureRequired: boolean;
 }
 
 function ShipmentForm({

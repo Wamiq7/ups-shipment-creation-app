@@ -6,7 +6,7 @@ import { Card, CardContent, CardDescription, CardTitle } from "../ui/card";
 import { CreateShipmentProfile } from "../CreateShipmentProfile";
 import { useEffect, useState } from "react";
 
-export default function ShipmentProfile() {
+export default function ShipmentProfile({ rating }) {
   const [shipmentProfiles, setShipmentProfiles] = useState<any[]>([]);
   const [selectedShipmentProfileId, setSelectedShipmentProfileId] = useState(
     localStorage.getItem("selectedShipmentProfileId") || ""
@@ -79,7 +79,9 @@ export default function ShipmentProfile() {
         </div>
         <div className="bg-c-orange px-2 items-center text-white border flex gap-2 border-black rounded-md max-w-fit">
           <p className="text-[14px] lg:text-[24px] font-bold">Rates:</p>
-          <h1 className="text-[20px] lg:text-[64px]">$15.49</h1>
+          <h1 className="text-[20px] lg:text-[64px]">{`$${
+            rating?.RatedShipment?.TotalCharges?.MonetaryValue || 0
+          }`}</h1>
         </div>
       </CardContent>
     </Card>

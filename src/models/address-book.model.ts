@@ -2,10 +2,6 @@ import mongoose from "mongoose";
 
 export const addressBookSchema = new mongoose.Schema(
   {
-    texIdentificationNumber: {
-      type: String,
-      required: true,
-    },
     fullName: {
       type: String,
       required: true,

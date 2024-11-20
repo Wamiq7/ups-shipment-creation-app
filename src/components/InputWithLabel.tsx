@@ -6,6 +6,7 @@ interface InputWithLabelProps {
   type?: string;
   placeholder?: string;
   id?: string;
+  name?: string;
   value?: string;
   onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
 }
@@ -15,6 +16,7 @@ export function InputWithLabel({
   type = "text",
   placeholder = "",
   id,
+  name,
   value,
   onChange,
 }: InputWithLabelProps) {
@@ -26,6 +28,7 @@ export function InputWithLabel({
       <Input
         type={type}
         id={id}
+        name={name}
         placeholder={placeholder}
         value={value}
         onChange={onChange}

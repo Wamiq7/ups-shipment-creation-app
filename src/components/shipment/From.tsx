@@ -27,16 +27,15 @@ export default function From({ shipmentData, setShipmentData }) {
       };
 
       const addressData = {
-        texIdentificationNumber: shipmentData.senderTaxId,
-        fullName: shipmentData.senderName,
+        fullName: shipmentData.shipFromName,
         contactName: shipmentData.senderAttention,
         addressLineOne: shipmentData.senderAddressLine,
-        zipCode: shipmentData.senderPostalCode,
-        city: shipmentData.senderCity,
-        state: shipmentData.senderState,
-        faxNumber: shipmentData.senderFax,
-        phoneNumber: shipmentData.senderPhone,
-        country: shipmentData.senderCountry,
+        zipCode: shipmentData.shipFromPostalCode,
+        city: shipmentData.shipFromCity,
+        state: shipmentData.shipFromState,
+        faxNumber: shipmentData.shipFromFax,
+        phoneNumber: shipmentData.shipFromPhone,
+        country: shipmentData.shipFromCountry,
         profileId: localStorage.getItem("selectedShipmentProfileId"),
       };
 
@@ -92,10 +91,9 @@ export default function From({ shipmentData, setShipmentData }) {
       };
 
       const addressData = {
-        texIdentificationNumber: shipmentData.senderTaxId,
         fullName: shipmentData.senderName,
-        contactName: shipmentData.senderAttention,
-        addressLineOne: shipmentData.senderAddressLine,
+        contactName: shipmentData.shipFromAttention,
+        addressLineOne: shipmentData.shipFromAddressLine,
         zipCode: shipmentData.senderPostalCode,
         city: shipmentData.senderCity,
         state: shipmentData.senderState,
@@ -139,16 +137,15 @@ export default function From({ shipmentData, setShipmentData }) {
 
                 setShipmentData({
                   ...shipmentData,
-                  senderTaxId: selectedAddressData.texIdentificationNumber,
-                  senderName: selectedAddressData.fullName,
-                  senderAttention: selectedAddressData.contactName,
-                  senderAddressLine: selectedAddressData.addressLineOne,
-                  senderPostalCode: selectedAddressData.zipCode,
-                  senderCity: selectedAddressData.city,
-                  senderState: selectedAddressData.state,
-                  senderFax: selectedAddressData.faxNumber,
-                  senderPhone: selectedAddressData.phoneNumber,
-                  senderCountry: selectedAddressData.country,
+                  senderName: selectedAddressData.senderName,
+                  senderAttention: selectedAddressData.senderAttention,
+                  senderAddressLine: selectedAddressData.shipFromAddressLine,
+                  senderPostalCode: selectedAddressData.shipFromPostalCode,
+                  senderCity: selectedAddressData.shipFromCity,
+                  senderState: selectedAddressData.shipFromState,
+                  senderFax: selectedAddressData.shipFromFax,
+                  senderPhone: selectedAddressData.shipFromPhone,
+                  senderCountry: selectedAddressData.shipFromCountry,
                 });
 
                 setSelectedAddress(value);
@@ -164,18 +161,6 @@ export default function From({ shipmentData, setShipmentData }) {
             </button>
             {isEdit ? (
               <div className="flex flex-col gap-3">
-                <div className="grid w-full max-w-sm items-center gap-1.5">
-                  <Label htmlFor="email" className="text-xs lg:text-sm">
-                    Tax Identification Number
-                  </Label>
-                  <Input
-                    type="text"
-                    name="senderTaxId"
-                    value={shipmentData.senderTaxId}
-                    onChange={handleChange}
-                    placeholder="Enter Sender Tax ID"
-                  />
-                </div>
                 <div className="flex gap-2">
                   <div className="grid w-full max-w-sm items-center gap-1.5">
                     <Label htmlFor="email" className="text-xs">
@@ -184,7 +169,7 @@ export default function From({ shipmentData, setShipmentData }) {
                     <Input
                       type="text"
                       name="senderName"
-                      value={shipmentData.senderName}
+                      value={shipmentData.shipFromName}
                       onChange={handleChange}
                       placeholder="Enter name"
                     />
@@ -196,7 +181,7 @@ export default function From({ shipmentData, setShipmentData }) {
                     <Input
                       type="text"
                       name="senderAttention"
-                      value={shipmentData.senderAttention}
+                      value={shipmentData.shipFromAttention}
                       onChange={handleChange}
                       placeholder="Enter contact name"
                     />
@@ -209,7 +194,7 @@ export default function From({ shipmentData, setShipmentData }) {
                   <Input
                     type="text"
                     name="senderAddressLine"
-                    value={shipmentData.senderAddressLine}
+                    value={shipmentData.shipFromAddressLine}
                     onChange={handleChange}
                     placeholder="Enter address line"
                   />
@@ -222,7 +207,7 @@ export default function From({ shipmentData, setShipmentData }) {
                     <Input
                       type="text"
                       name="senderPostalCode"
-                      value={shipmentData.senderPostalCode}
+                      value={shipmentData.shipFromPostalCode}
                       onChange={handleChange}
                       placeholder="Enter zip code"
                     />
@@ -234,7 +219,7 @@ export default function From({ shipmentData, setShipmentData }) {
                     <Input
                       type="text"
                       name="senderCity"
-                      value={shipmentData.senderCity}
+                      value={shipmentData.shipFromCity}
                       onChange={handleChange}
                       placeholder="Enter city"
                     />
@@ -246,7 +231,7 @@ export default function From({ shipmentData, setShipmentData }) {
                     <Input
                       type="text"
                       name="senderState"
-                      value={shipmentData.senderState}
+                      value={shipmentData.shipFromState}
                       onChange={handleChange}
                       placeholder="Enter state"
                     />
@@ -260,7 +245,7 @@ export default function From({ shipmentData, setShipmentData }) {
                     <Input
                       type="text"
                       name="senderFax"
-                      value={shipmentData.senderFax}
+                      value={shipmentData.shipFromFax}
                       onChange={handleChange}
                       placeholder="Enter fax number"
                     />
@@ -272,7 +257,7 @@ export default function From({ shipmentData, setShipmentData }) {
                     <Input
                       type="text"
                       name="senderPhone"
-                      value={shipmentData.senderPhone}
+                      value={shipmentData.shipFromPhone}
                       onChange={handleChange}
                       placeholder="Enter phone number"
                     />
@@ -284,7 +269,7 @@ export default function From({ shipmentData, setShipmentData }) {
                     <Input
                       type="text"
                       name="senderCountry"
-                      value={shipmentData.senderCountry}
+                      value={shipmentData.shipFromCountry}
                       onChange={handleChange}
                       placeholder="Enter country code"
                     />

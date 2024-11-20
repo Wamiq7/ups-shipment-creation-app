@@ -5,10 +5,10 @@ import { Checkbox } from "../ui/checkbox";
 import BasicSelect from "../BasicSelect";
 import { Label } from "../ui/label";
 
-const themeOptions = [
-  { value: "light", label: "Light" },
-  { value: "dark", label: "Dark" },
-  { value: "system", label: "System" },
+const packageOptions = [
+  { value: "03", label: "03" },
+  { value: "02", label: "02" },
+  { value: "01", label: "01" },
 ];
 
 const serviceTypes = [
@@ -21,7 +21,20 @@ const PackageInput = ({ shipmentData, setShipmentData }) => {
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
-    setShipmentData({ ...shipmentData, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setShipmentData({
+      ...shipmentData,
+      [name]: value,
+    });
+  };
+
+  const handleSignature = (e: any) => {
+    console.log(e.target.checked);
+
+    setShipmentData({
+      ...shipmentData,
+      [`isSignatureRequired`]: e.target.checked,
+    });
   };
 
   return (
@@ -29,37 +42,46 @@ const PackageInput = ({ shipmentData, setShipmentData }) => {
       <div className="flex flex-col gap-3">
         <InputWithLabel
           label="ea"
-          type="email"
-          placeholder=""
-          id="email"
-          // value={email}
-          // onChange={(e) => setEmail(e.target.value)}
+          type="number"
+          placeholder="1"
+          id="pkgeQuantity"
+          name="pkgeQuantity"
+          value={shipmentData.pkgeQuantity}
+          onChange={handleChange}
         />
       </div>
+
+      {/* Package Dimensions */}
       <div className="col-span-4">
-        <div className="grid grid-col-3 lg:grid-cols-5 gap-4">
+        <div className="grid grid-cols-3 lg:grid-cols-5 gap-4">
           <div className="lg:block hidden"></div>
           <div className="col-span-3 flex flex-col gap-3">
             <div className="flex gap-3 lg:gap-4">
               <InputWithLabel
-                label="inch"
+                label="Length (in)"
                 type="number"
                 placeholder="L"
-                value={shipmentData.packageLength}
+                id="packageLength"
+                name="packageLength"
+                value={shipmentData.packageLength || ""}
                 onChange={handleChange}
               />
               <InputWithLabel
-                label="inch"
+                label="Width (in)"
                 type="number"
                 placeholder="W"
-                value={shipmentData.packageWidth}
+                id="packageWidth"
+                name="packageWidth"
+                value={shipmentData.packageWidth || ""}
                 onChange={handleChange}
               />
               <InputWithLabel
-                label="inch"
+                label="Height (in)"
                 type="number"
                 placeholder="H"
-                value={shipmentData.packageHeight}
+                id="packageHeight"
+                name="packageHeight"
+                value={shipmentData.packageHeight || ""}
                 onChange={handleChange}
               />
             </div>
@@ -67,18 +89,29 @@ const PackageInput = ({ shipmentData, setShipmentData }) => {
           <div className="lg:block hidden"></div>
         </div>
       </div>
+
+      {/* Package Weight */}
       <div className="col-span-1 flex gap-2">
         <InputWithLabel
-          label="lbs"
+          label="Weight (lbs)"
           type="number"
-          placeholder=""
-          value={shipmentData.packageWeight}
+          placeholder="Enter weight"
+          id="packageWeight"
+          name="packageWeight"
+          value={shipmentData.packageWeight || ""}
           onChange={handleChange}
         />
       </div>
+
+      {/* Terms Checkbox */}
       <div className="col-span-1 flex flex-col space-y-2 h-full justify-center items-center">
         <div className="flex flex-col gap-3 items-center">
-          <Checkbox id="terms" />
+          <Checkbox
+            id="isSignatureRequired"
+            name="isSignatureRequired"
+            checked={shipmentData.isSignatureRequired}
+            onChange={handleSignature} // Works fine with Checkbox components from libraries
+          />
         </div>
       </div>
     </div>
@@ -121,11 +154,7 @@ export default function PackageShipmentDetails({
             <Label htmlFor="email" className="text-xs">
               Ship date*
             </Label>
-            <CalendarInput
-              label="Date of Birth"
-              placeholder="Select date"
-              onDateChange={(date) => console.log("Selected date:", date)}
-            />
+            <p>{shipmentData?.shipDate}</p>
           </div>
           <div className="grid w-full max-w-sm items-center gap-1.5">
             <Label htmlFor="email" className="text-xs">
@@ -142,7 +171,11 @@ export default function PackageShipmentDetails({
             <Label htmlFor="email" className="text-xs">
               Package Type*
             </Label>
-            <BasicSelect value={""} options={themeOptions} placeholder="" />
+            <BasicSelect
+              value={shipmentData.packageType}
+              options={packageOptions}
+              placeholder=""
+            />
           </div>
         </div>
         <div className="grid grid-cols-7 gap-3 lg:gap-8 w-full mt-5 lg:mt-8">
@@ -184,15 +217,6 @@ export default function PackageShipmentDetails({
         <button className="text-c-blue-accent italic text-xs hover:underline">
           + Add another Package
         </button>
-        <h1 className="text-c-orange text-base lg:text-2xl mt-2">
-          Add another Package to add more row
-        </h1>
-        <div className="border border-c-orange border-dotted py-2">
-          <PackageInput
-            shipmentData={shipmentData}
-            setShipmentData={setShipmentData}
-          />
-        </div>
       </CardContent>
     </Card>
   );
