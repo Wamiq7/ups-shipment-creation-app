@@ -6,17 +6,17 @@ import { toast } from "sonner";
 import { Button } from "../ui/button";
 import BasicSelect from "../BasicSelect";
 import axios from "axios";
+import { useAppDispatch, useAppSelector } from "@/redux/hooks";
+import { updateDataState } from "@/redux/dataSlice";
+import { Checkbox } from "../ui/checkbox";
 
-export default function From({ shipmentData, setShipmentData }) {
+export default function From() {
+  const dispatch = useAppDispatch();
+  const shipmentData = useAppSelector((state) => state.data.from);
+  console.log("dataState", shipmentData);
   const [isEdit, setIsEdit] = useState(false);
   const [savedAddress, setSavedAddress] = useState<any>([]);
   const [selectedAddress, setSelectedAddress] = useState("");
-
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
-  ) => {
-    setShipmentData({ ...shipmentData, [e.target.name]: e.target.value });
-  };
 
   const createAddressBookEntry = async () => {
     try {
@@ -27,15 +27,15 @@ export default function From({ shipmentData, setShipmentData }) {
       };
 
       const addressData = {
-        fullName: shipmentData.shipFromName,
-        contactName: shipmentData.senderAttention,
+        fullName: shipmentData.senderName,
+        contactName: shipmentData.contactName,
         addressLineOne: shipmentData.senderAddressLine,
-        zipCode: shipmentData.shipFromPostalCode,
-        city: shipmentData.shipFromCity,
-        state: shipmentData.shipFromState,
-        faxNumber: shipmentData.shipFromFax,
-        phoneNumber: shipmentData.shipFromPhone,
-        country: shipmentData.shipFromCountry,
+        zipCode: shipmentData.senderPostalCode,
+        city: shipmentData.senderCity,
+        state: shipmentData.senderState,
+        faxNumber: shipmentData.senderFax,
+        phoneNumber: shipmentData.senderFax,
+        country: shipmentData.senderCountry,
         profileId: localStorage.getItem("selectedShipmentProfileId"),
       };
 
@@ -92,13 +92,13 @@ export default function From({ shipmentData, setShipmentData }) {
 
       const addressData = {
         fullName: shipmentData.senderName,
-        contactName: shipmentData.shipFromAttention,
-        addressLineOne: shipmentData.shipFromAddressLine,
+        contactName: shipmentData.contactName,
+        addressLineOne: shipmentData.senderAddressLine,
         zipCode: shipmentData.senderPostalCode,
         city: shipmentData.senderCity,
         state: shipmentData.senderState,
         faxNumber: shipmentData.senderFax,
-        phoneNumber: shipmentData.senderPhone,
+        phoneNumber: shipmentData.senderFax,
         country: shipmentData.senderCountry,
         profileId: localStorage.getItem("selectedShipmentProfileId"),
       };
@@ -135,18 +135,23 @@ export default function From({ shipmentData, setShipmentData }) {
                   (item: any) => item._id === value
                 );
 
-                setShipmentData({
-                  ...shipmentData,
-                  senderName: selectedAddressData.senderName,
-                  senderAttention: selectedAddressData.senderAttention,
-                  senderAddressLine: selectedAddressData.shipFromAddressLine,
-                  senderPostalCode: selectedAddressData.shipFromPostalCode,
-                  senderCity: selectedAddressData.shipFromCity,
-                  senderState: selectedAddressData.shipFromState,
-                  senderFax: selectedAddressData.shipFromFax,
-                  senderPhone: selectedAddressData.shipFromPhone,
-                  senderCountry: selectedAddressData.shipFromCountry,
-                });
+                dispatch(
+                  updateDataState({
+                    path: ["from"],
+                    updates: {
+                      senderName: selectedAddressData.senderName,
+                      senderAttention: selectedAddressData.senderAttention,
+                      senderAddressLine:
+                        selectedAddressData.shipFromAddressLine,
+                      senderPostalCode: selectedAddressData.shipFromPostalCode,
+                      senderCity: selectedAddressData.shipFromCity,
+                      senderState: selectedAddressData.shipFromState,
+                      senderFax: selectedAddressData.shipFromFax,
+                      senderPhone: selectedAddressData.shipFromPhone,
+                      senderCountry: selectedAddressData.shipFromCountry,
+                    },
+                  })
+                );
 
                 setSelectedAddress(value);
               }}
@@ -169,8 +174,17 @@ export default function From({ shipmentData, setShipmentData }) {
                     <Input
                       type="text"
                       name="senderName"
-                      value={shipmentData.shipFromName}
-                      onChange={handleChange}
+                      value={shipmentData.senderName}
+                      onChange={(e) => {
+                        dispatch(
+                          updateDataState({
+                            path: ["from"],
+                            updates: {
+                              senderName: e.target.value,
+                            },
+                          })
+                        );
+                      }}
                       placeholder="Enter name"
                     />
                   </div>
@@ -181,8 +195,17 @@ export default function From({ shipmentData, setShipmentData }) {
                     <Input
                       type="text"
                       name="senderAttention"
-                      value={shipmentData.shipFromAttention}
-                      onChange={handleChange}
+                      value={shipmentData.senderAttention}
+                      onChange={(e) => {
+                        dispatch(
+                          updateDataState({
+                            path: ["from"],
+                            updates: {
+                              senderAttention: e.target.value,
+                            },
+                          })
+                        );
+                      }}
                       placeholder="Enter contact name"
                     />
                   </div>
@@ -194,8 +217,17 @@ export default function From({ shipmentData, setShipmentData }) {
                   <Input
                     type="text"
                     name="senderAddressLine"
-                    value={shipmentData.shipFromAddressLine}
-                    onChange={handleChange}
+                    value={shipmentData.senderAddressLine}
+                    onChange={(e) => {
+                      dispatch(
+                        updateDataState({
+                          path: ["from"],
+                          updates: {
+                            senderAddressLine: e.target.value,
+                          },
+                        })
+                      );
+                    }}
                     placeholder="Enter address line"
                   />
                 </div>
@@ -207,8 +239,17 @@ export default function From({ shipmentData, setShipmentData }) {
                     <Input
                       type="text"
                       name="senderPostalCode"
-                      value={shipmentData.shipFromPostalCode}
-                      onChange={handleChange}
+                      value={shipmentData.senderPostalCode}
+                      onChange={(e) => {
+                        dispatch(
+                          updateDataState({
+                            path: ["from"],
+                            updates: {
+                              senderPostalCode: e.target.value,
+                            },
+                          })
+                        );
+                      }}
                       placeholder="Enter zip code"
                     />
                   </div>
@@ -219,8 +260,17 @@ export default function From({ shipmentData, setShipmentData }) {
                     <Input
                       type="text"
                       name="senderCity"
-                      value={shipmentData.shipFromCity}
-                      onChange={handleChange}
+                      value={shipmentData.senderCity}
+                      onChange={(e) => {
+                        dispatch(
+                          updateDataState({
+                            path: ["from"],
+                            updates: {
+                              senderCity: e.target.value,
+                            },
+                          })
+                        );
+                      }}
                       placeholder="Enter city"
                     />
                   </div>
@@ -231,8 +281,17 @@ export default function From({ shipmentData, setShipmentData }) {
                     <Input
                       type="text"
                       name="senderState"
-                      value={shipmentData.shipFromState}
-                      onChange={handleChange}
+                      value={shipmentData.senderState}
+                      onChange={(e) => {
+                        dispatch(
+                          updateDataState({
+                            path: ["from"],
+                            updates: {
+                              senderState: e.target.value,
+                            },
+                          })
+                        );
+                      }}
                       placeholder="Enter state"
                     />
                   </div>
@@ -245,8 +304,17 @@ export default function From({ shipmentData, setShipmentData }) {
                     <Input
                       type="text"
                       name="senderFax"
-                      value={shipmentData.shipFromFax}
-                      onChange={handleChange}
+                      value={shipmentData.senderFax}
+                      onChange={(e) => {
+                        dispatch(
+                          updateDataState({
+                            path: ["from"],
+                            updates: {
+                              senderFax: e.target.value,
+                            },
+                          })
+                        );
+                      }}
                       placeholder="Enter fax number"
                     />
                   </div>
@@ -257,8 +325,17 @@ export default function From({ shipmentData, setShipmentData }) {
                     <Input
                       type="text"
                       name="senderPhone"
-                      value={shipmentData.shipFromPhone}
-                      onChange={handleChange}
+                      value={shipmentData.senderPhone}
+                      onChange={(e) => {
+                        dispatch(
+                          updateDataState({
+                            path: ["from"],
+                            updates: {
+                              senderPhone: e.target.value,
+                            },
+                          })
+                        );
+                      }}
                       placeholder="Enter phone number"
                     />
                   </div>
@@ -269,22 +346,47 @@ export default function From({ shipmentData, setShipmentData }) {
                     <Input
                       type="text"
                       name="senderCountry"
-                      value={shipmentData.shipFromCountry}
-                      onChange={handleChange}
+                      value={shipmentData.senderCountry}
+                      onChange={(e) => {
+                        dispatch(
+                          updateDataState({
+                            path: ["from"],
+                            updates: {
+                              senderName: e.target.value,
+                            },
+                          })
+                        );
+                      }}
                       placeholder="Enter country code"
                     />
                   </div>
                 </div>
                 <div className="flex flex-col gap-2">
+                  <div className="flex items-center space-x-2">
+                    <Checkbox id="terms" />
+                    <label
+                      htmlFor="terms"
+                      className="text-xs lg:text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                    >
+                      Save Edits to this Address
+                    </label>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <Checkbox id="terms" />
+                    <label
+                      htmlFor="terms"
+                      className="text-xs lg:text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                    >
+                      Save as New Address book
+                    </label>
+                  </div>
                   <Button
                     disabled={selectedAddress === ""}
                     variant={selectedAddress === "" ? "outline" : "default"}
                     onClick={() => {
                       updateAddressBookEntry();
                     }}
-                  >
-                    Save Edits to this Address
-                  </Button>
+                  ></Button>
                   <Button
                     variant={"default"}
                     onClick={() => {
