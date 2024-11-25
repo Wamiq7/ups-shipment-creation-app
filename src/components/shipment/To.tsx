@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useEffect, useState } from "react";
 import { Card, CardContent, CardDescription, CardTitle } from "../ui/card";
 import BasicSelect from "../BasicSelect";
