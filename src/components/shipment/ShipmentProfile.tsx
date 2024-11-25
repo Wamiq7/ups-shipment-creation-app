@@ -6,15 +6,13 @@ import { Card, CardContent, CardDescription, CardTitle } from "../ui/card";
 import { CreateShipmentProfile } from "../CreateShipmentProfile";
 import { useEffect, useState } from "react";
 
-export default function ShipmentProfile({ rating }) {
+export default function ShipmentProfile({ rating }: { rating: any }) {
   const [shipmentProfiles, setShipmentProfiles] = useState<any[]>([]);
-  const [selectedShipmentProfileId, setSelectedShipmentProfileId] = useState(
-    localStorage.getItem("selectedShipmentProfileId") || ""
-  );
-  const [selectedShipmentProfile, setSelectedShipmentProfile] = useState(
-    localStorage.getItem("selectedShipmentProfile") || ""
-  );
+  const [selectedShipmentProfileId, setSelectedShipmentProfileId] =
+    useState("");
+  const [selectedShipmentProfile, setSelectedShipmentProfile] = useState("");
 
+  // Fetch shipment profiles from API
   const getShipmentProfiles = async () => {
     try {
       const config = {
@@ -30,6 +28,16 @@ export default function ShipmentProfile({ rating }) {
     }
   };
 
+  // Load localStorage data after the component mounts
+  useEffect(() => {
+    const savedProfileId =
+      localStorage.getItem("selectedShipmentProfileId") || "";
+    const savedProfile = localStorage.getItem("selectedShipmentProfile") || "";
+
+    setSelectedShipmentProfileId(savedProfileId);
+    setSelectedShipmentProfile(savedProfile);
+  }, []);
+
   useEffect(() => {
     getShipmentProfiles();
   }, []);
@@ -39,22 +47,29 @@ export default function ShipmentProfile({ rating }) {
     label: profile.name,
   }));
 
+  // Update localStorage whenever selectedShipmentProfile changes
   useEffect(() => {
     if (selectedShipmentProfile) {
       const selectedProfileId = shipmentProfiles.find(
         (profile: any) => profile.name === selectedShipmentProfile
       )?._id;
 
-      localStorage.setItem("selectedShipmentProfileId", selectedProfileId);
+      localStorage.setItem(
+        "selectedShipmentProfileId",
+        selectedProfileId || ""
+      );
       localStorage.setItem("selectedShipmentProfile", selectedShipmentProfile);
     }
-  }, [selectedShipmentProfile]);
+  }, [selectedShipmentProfile, shipmentProfiles]);
 
+  // Update localStorage whenever selectedShipmentProfileId changes
   useEffect(() => {
-    localStorage.setItem(
-      "selectedShipmentProfileId",
-      selectedShipmentProfileId
-    );
+    if (selectedShipmentProfileId) {
+      localStorage.setItem(
+        "selectedShipmentProfileId",
+        selectedShipmentProfileId
+      );
+    }
   }, [selectedShipmentProfileId]);
 
   return (
@@ -65,7 +80,7 @@ export default function ShipmentProfile({ rating }) {
             <CardTitle className="flex flex-col lg:flex-row lg:items-center gap-2">
               Shipment Profile
               <CardDescription className="italic font-normal text-[12px] lg:text-sm">
-                * My shipment profile(formerly Fast Ship)
+                * My shipment profile (formerly Fast Ship)
               </CardDescription>
             </CardTitle>
             <CreateShipmentProfile />
