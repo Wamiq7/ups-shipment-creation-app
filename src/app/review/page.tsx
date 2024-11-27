@@ -165,22 +165,23 @@ export default function Review() {
       shipDate: shipmentData.packageShipmentDetails.shipDate,
       serviceType: shipmentData.packageShipmentDetails.serviceType,
       packageType: shipmentData.packageShipmentDetails.packageType,
-      packages: [
-        {
-          packageQuantity: shipmentData.packageShipmentDetails.pkgeQuantity,
-          weight: shipmentData.packageShipmentDetails.packageWeight,
-          dimensions: {
-            length: shipmentData.packageShipmentDetails.packageLength,
-            width: shipmentData.packageShipmentDetails.packageWidth,
-            height: shipmentData.packageShipmentDetails.packageHeight,
-          },
-          signatureRequired:
-            shipmentData.packageShipmentDetails.isSignatureRequired,
+      packages: shipmentData.packageShipmentDetails.packages.map((pkg) => ({
+        packageQuantity: pkg.pkgeQuantity,
+        weight: pkg.packageWeight,
+        dimensions: {
+          length: pkg.dimensions.packageLength,
+          width: pkg.dimensions.packageWidth,
+          height: pkg.dimensions.packageHeight,
         },
-      ],
+        signatureRequired: pkg.isSignatureRequired,
+      })),
+      description: shipmentData.packageShipmentDetails.description,
+      packageDescription:
+        shipmentData.packageShipmentDetails.packageDescription,
     };
     await createPackageShipment(pkgData);
 
+    // UPS Apis
     const data = await handleAddress(shipmentData);
     if (data.XAVResponse.Response.ResponseStatus.Description === "Success") {
       const data = await handleRatings(shipmentData);

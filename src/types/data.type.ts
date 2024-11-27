@@ -34,16 +34,22 @@ interface To {
   selectedAddress: string;
 }
 
+interface Package {
+  pkgeQuantity: string;
+  dimensions: {
+    packageLength: string;
+    packageWidth: string;
+    packageHeight: string;
+  };
+  packageWeight: string;
+  isSignatureRequired: boolean;
+}
+
 interface PackageShipmentDetails {
   shipDate: string;
   serviceType: string;
   packageType: string;
-  pkgeQuantity: string;
-  packageLength: string;
-  packageWidth: string;
-  packageHeight: string;
-  packageWeight: string;
-  isSignatureRequired: boolean;
+  packages: Package[];
   description: string;
   packageDescription: string;
 }

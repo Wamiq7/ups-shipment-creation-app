@@ -4,13 +4,33 @@ import { CalendarInput } from "../CalenderInput";
 import { InputWithLabel } from "../InputWithLabel";
 import { Checkbox } from "../ui/checkbox";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
-import { updateDataState } from "@/redux/dataSlice";
+import { addPackage, updateDataState } from "@/redux/dataSlice";
 import BasicSelect from "../BasicSelect";
 
 const packageOptions = [
-  { value: "03", label: "03" },
-  { value: "02", label: "02" },
-  { value: "01", label: "01" },
+  { value: "01", label: "UPS Letter" },
+  { value: "02", label: "Customer Supplied Package" },
+  { value: "03", label: "Tube" },
+  { value: "04", label: "PAK" },
+  { value: "21", label: "UPS Express Box" },
+  { value: "24", label: "UPS 25KG Box" },
+  { value: "25", label: "UPS 10KG Box" },
+  { value: "30", label: "Pallet" },
+  { value: "2a", label: "Small Express Box" },
+  { value: "2b", label: "Medium Express Box" },
+  { value: "2c", label: "Large Express Box" },
+  { value: "56", label: "Flats" },
+  { value: "57", label: "Parcels" },
+  { value: "58", label: "BPM" },
+  { value: "59", label: "First Class" },
+  { value: "60", label: "Priority" },
+  { value: "61", label: "Machineables" },
+  { value: "62", label: "Irregulars" },
+  { value: "63", label: "Parcel Post" },
+  { value: "64", label: "BPM Parcel" },
+  { value: "65", label: "Media Mail" },
+  { value: "66", label: "BPM Flat" },
+  { value: "67", label: "Standard Flat" },
 ];
 
 const serviceTypes = [
@@ -19,19 +39,14 @@ const serviceTypes = [
   { value: "01", label: "Next Day Air" },
 ];
 
-const PackageInput = () => {
+const PackageInput = ({ item, id }) => {
   const dispatch = useAppDispatch();
-  const shipmentData = useAppSelector(
-    (state) => state.data.packageShipmentDetails
-  );
 
   const handleSignature = (checked) => {
     dispatch(
       updateDataState({
-        path: ["packageShipmentDetails"],
-        updates: {
-          isSignatureRequired: checked,
-        },
+        path: ["packageShipmentDetails", "packages", id],
+        updates: { isSignatureRequired: checked },
       })
     );
   };
@@ -43,14 +58,12 @@ const PackageInput = () => {
           label="ea"
           type="number"
           placeholder="1"
-          value={shipmentData.pkgeQuantity}
+          value={item.pkgeQuantity}
           onChange={(e) => {
             dispatch(
               updateDataState({
-                path: ["packageShipmentDetails"],
-                updates: {
-                  pkgeQuantity: e.target.value,
-                },
+                path: ["packageShipmentDetails", "packages", id],
+                updates: { pkgeQuantity: e.target.value },
               })
             );
           }}
@@ -69,14 +82,17 @@ const PackageInput = () => {
                 placeholder="L"
                 id="packageLength"
                 name="packageLength"
-                value={shipmentData.packageLength || ""}
+                value={item.dimensions.packageLength || ""}
                 onChange={(e) => {
                   dispatch(
                     updateDataState({
-                      path: ["packageShipmentDetails"],
-                      updates: {
-                        packageLength: e.target.value,
-                      },
+                      path: [
+                        "packageShipmentDetails",
+                        "packages",
+                        id,
+                        "dimensions",
+                      ],
+                      updates: { packageLength: e.target.value },
                     })
                   );
                 }}
@@ -87,14 +103,17 @@ const PackageInput = () => {
                 placeholder="W"
                 id="packageWidth"
                 name="packageWidth"
-                value={shipmentData.packageWidth || ""}
+                value={item.dimensions.packageWidth || ""}
                 onChange={(e) => {
                   dispatch(
                     updateDataState({
-                      path: ["packageShipmentDetails"],
-                      updates: {
-                        packageWidth: e.target.value,
-                      },
+                      path: [
+                        "packageShipmentDetails",
+                        "packages",
+                        id,
+                        "dimensions",
+                      ],
+                      updates: { packageWidth: e.target.value },
                     })
                   );
                 }}
@@ -105,14 +124,17 @@ const PackageInput = () => {
                 placeholder="H"
                 id="packageHeight"
                 name="packageHeight"
-                value={shipmentData.packageHeight || ""}
+                value={item.dimensions.packageHeight || ""}
                 onChange={(e) => {
                   dispatch(
                     updateDataState({
-                      path: ["packageShipmentDetails"],
-                      updates: {
-                        packageHeight: e.target.value,
-                      },
+                      path: [
+                        "packageShipmentDetails",
+                        "packages",
+                        id,
+                        "dimensions",
+                      ],
+                      updates: { packageHeight: e.target.value },
                     })
                   );
                 }}
@@ -131,14 +153,12 @@ const PackageInput = () => {
           placeholder="Enter weight"
           id="packageWeight"
           name="packageWeight"
-          value={shipmentData.packageWeight || ""}
+          value={item.packageWeight || ""}
           onChange={(e) => {
             dispatch(
               updateDataState({
-                path: ["packageShipmentDetails"],
-                updates: {
-                  packageWeight: e.target.value,
-                },
+                path: ["packageShipmentDetails", "packages", id],
+                updates: { packageWeight: e.target.value },
               })
             );
           }}
@@ -151,7 +171,7 @@ const PackageInput = () => {
           <Checkbox
             id="isSignatureRequired"
             name="isSignatureRequired"
-            checked={shipmentData.isSignatureRequired}
+            checked={item.isSignatureRequired}
             onCheckedChange={handleSignature}
           />
         </div>
@@ -165,6 +185,10 @@ export default function PackageShipmentDetails() {
   const shipmentData = useAppSelector(
     (state) => state.data.packageShipmentDetails
   );
+
+  const handleAddPackage = () => {
+    dispatch(addPackage());
+  };
 
   const selectedOption = serviceTypes.find(
     (option) => option.value === shipmentData?.serviceType
@@ -230,7 +254,6 @@ export default function PackageShipmentDetails() {
             <BasicSelect
               value={shipmentData.packageType}
               options={packageOptions}
-              placeholder=""
               onChange={(value) => {
                 dispatch(
                   updateDataState({
@@ -276,8 +299,13 @@ export default function PackageShipmentDetails() {
             </div>
           </div>
         </div>
-        <PackageInput />
-        <button className="text-c-blue-accent italic text-xs hover:underline">
+        {shipmentData.packages.map((item: any, index) => (
+          <PackageInput key={index} item={item} id={index} />
+        ))}
+        <button
+          className="text-c-blue-accent italic text-xs hover:underline"
+          onClick={handleAddPackage}
+        >
           + Add another Package
         </button>
       </CardContent>

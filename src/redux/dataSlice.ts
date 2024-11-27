@@ -44,12 +44,18 @@ const initialState: IDataState = {
     shipDate: new Date().toLocaleDateString(),
     serviceType: "03",
     packageType: "02",
-    pkgeQuantity: "1",
-    packageLength: "10",
-    packageWidth: "30",
-    packageHeight: "45",
-    packageWeight: "5",
-    isSignatureRequired: true,
+    packages: [
+      {
+        pkgeQuantity: "1",
+        dimensions: {
+          packageLength: "10",
+          packageWidth: "30",
+          packageHeight: "45",
+        },
+        packageWeight: "5",
+        isSignatureRequired: true,
+      },
+    ],
     description: "Ship WS test",
     packageDescription: "Nails",
   },
@@ -121,10 +127,22 @@ export const dataSlice = createSlice({
       const { path, updates } = action.payload;
       updateNestedState(state, path, updates);
     },
+    addPackage: (state) => {
+      state.packageShipmentDetails.packages.push({
+        pkgeQuantity: "1",
+        dimensions: {
+          packageLength: "0",
+          packageWidth: "0",
+          packageHeight: "0",
+        },
+        packageWeight: "0",
+        isSignatureRequired: false,
+      });
+    },
   },
 });
 
-export const { updateDataState } = dataSlice.actions;
+export const { updateDataState, addPackage } = dataSlice.actions;
 
 // Selector for accessing data state
 export const dataState = (state: RootState) => state.data;
