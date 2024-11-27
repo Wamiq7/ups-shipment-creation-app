@@ -2,11 +2,13 @@
 
 import axios from "axios";
 import BasicSelect from "../BasicSelect";
-import { Card, CardContent, CardDescription, CardTitle } from "../ui/card";
-import { CreateShipmentProfile } from "../CreateShipmentProfile";
 import { useEffect, useState } from "react";
+import { Card, CardContent, CardDescription, CardTitle } from "../ui/card";
+import { useAppDispatch } from "@/redux/hooks";
+import { updateDataState } from "@/redux/dataSlice";
 
-export default function ShipmentProfile({ rating }: { rating: any }) {
+export default function ShipmentProfile() {
+  const dispatch = useAppDispatch();
   const [shipmentProfiles, setShipmentProfiles] = useState<any[]>([]);
   const [selectedShipmentProfileId, setSelectedShipmentProfileId] =
     useState("");
@@ -43,11 +45,10 @@ export default function ShipmentProfile({ rating }: { rating: any }) {
   }, []);
 
   const formattedProfiles = shipmentProfiles?.map((profile: any) => ({
-    value: profile.name,
+    value: profile,
     label: profile.name,
   }));
 
-  // Update localStorage whenever selectedShipmentProfile changes
   useEffect(() => {
     if (selectedShipmentProfile) {
       const selectedProfileId = shipmentProfiles.find(
@@ -62,7 +63,6 @@ export default function ShipmentProfile({ rating }: { rating: any }) {
     }
   }, [selectedShipmentProfile, shipmentProfiles]);
 
-  // Update localStorage whenever selectedShipmentProfileId changes
   useEffect(() => {
     if (selectedShipmentProfileId) {
       localStorage.setItem(
@@ -83,20 +83,23 @@ export default function ShipmentProfile({ rating }: { rating: any }) {
                 * My shipment profile (formerly Fast Ship)
               </CardDescription>
             </CardTitle>
-            <CreateShipmentProfile />
           </div>
           <BasicSelect
             options={formattedProfiles}
             placeholder="Select Shipment Profile"
             value={selectedShipmentProfile}
-            onChange={(value: any) => setSelectedShipmentProfile(value)}
+            onChange={(value: any) => {
+              dispatch(
+                updateDataState({
+                  path: ["shipmentProfile"],
+                  updates: {
+                    selectedAddress: value._id,
+                  },
+                })
+              );
+              setSelectedShipmentProfile(value.name);
+            }}
           />
-        </div>
-        <div className="bg-c-orange px-2 items-center text-white border flex gap-2 border-black rounded-md max-w-fit">
-          <p className="text-[14px] lg:text-[24px] font-bold">Rates:</p>
-          <h1 className="text-[20px] lg:text-[64px]">{`$${
-            rating?.RatedShipment?.TotalCharges?.MonetaryValue || 0
-          }`}</h1>
         </div>
       </CardContent>
     </Card>

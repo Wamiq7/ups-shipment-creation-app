@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Card,
   CardContent,
@@ -24,6 +24,11 @@ export default function Login() {
   const [error, setError] = useState<string | null>(null);
 
   const router = useRouter();
+
+  useEffect(() => {
+    // Clear the localStorage when redirected to the login page
+    localStorage.removeItem("token");
+  }, []);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;

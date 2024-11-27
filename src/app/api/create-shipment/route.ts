@@ -24,51 +24,55 @@ export async function POST(req: NextRequest) {
         Shipment: {
           Description: "Ship WS test",
           Shipper: {
-            Name: "ShipperName",
-            AttentionName: "ShipperZs Attn Name",
-            TaxIdentificationNumber: "123456",
+            Name: payload.from.senderName,
+            AttentionName: payload.from.senderAttention,
+            TaxIdentificationNumber: payload.from.senderTaxId,
             Phone: {
-              Number: "1115554758",
-              Extension: " ",
+              Number: payload.from.senderPhone,
+              Extension: payload.from.extension,
             },
             ShipperNumber: `${process.env.account_number}`,
-            FaxNumber: "8002222222",
+            FaxNumber: payload.from.senderFax,
             Address: {
-              AddressLine: ["2311 York Rd"],
-              City: "Timonium",
-              StateProvinceCode: "MD",
-              PostalCode: "21093",
-              CountryCode: "US",
+              AddressLine: [
+                payload.pickUpLocation.shipFromAddressLine?.toString(),
+              ],
+              City: payload.from.senderCity,
+              StateProvinceCode: payload.from.senderState,
+              PostalCode: payload.from.senderPostalCode,
+              CountryCode: payload.from.senderCountry,
             },
           },
           ShipTo: {
-            Name: "Happy Dog Pet Supply",
-            AttentionName: "1160b_74",
+            Name: payload.to.receiverName,
+            AttentionName: payload.to.receiverAttention,
             Phone: {
-              Number: "9225377171",
+              Number: payload.to.receiverPhone,
             },
             Address: {
-              AddressLine: [payload.receiverAddressLine?.toString()],
-              City: "timonium",
-              StateProvinceCode: "MD",
-              PostalCode: "21030",
-              CountryCode: "US",
+              AddressLine: [payload.to.receiverAddressLine?.toString()],
+              City: payload.to.receiverCity,
+              StateProvinceCode: payload.to.receiverState,
+              PostalCode: payload.to.receiverPostalCode,
+              CountryCode: payload.to.receiverCountry,
             },
             Residential: " ",
           },
           ShipFrom: {
-            Name: "T and T Designs",
-            AttentionName: "1160b_74",
+            Name: payload.pickUpLocation.shipFromName,
+            AttentionName: payload.pickUpLocation.shipFromAttention,
             Phone: {
-              Number: "1234567890",
+              Number: payload.pickUpLocation.shipFromPhone,
             },
-            FaxNumber: "1234567890",
+            FaxNumber: payload.pickUpLocation.shipFromFax,
             Address: {
-              AddressLine: [payload.shipFromAddressLine?.toString()],
-              City: "Alpharetta",
-              StateProvinceCode: "GA",
-              PostalCode: "30005",
-              CountryCode: "US",
+              AddressLine: [
+                payload.pickUpLocation.shipFromAddressLine?.toString(),
+              ],
+              City: payload.pickUpLocation.shipFromCity,
+              StateProvinceCode: payload.pickUpLocation.shipFromState,
+              PostalCode: payload.pickUpLocation.shipFromPostalCode,
+              CountryCode: payload.pickUpLocation.shipFromCountry,
             },
           },
           PaymentInformation: {
@@ -80,30 +84,30 @@ export async function POST(req: NextRequest) {
             },
           },
           Service: {
-            Code: payload.serviceType.toString(),
+            Code: payload.packageShipmentDetails.serviceType.toString(),
             Description: "Express",
           },
           Package: {
-            Description: " ",
+            Description: payload.packageShipmentDetails.description,
             Packaging: {
-              Code: "02",
-              Description: "Nails",
+              Code: payload.packageShipmentDetails.packageType,
+              Description: payload.packageShipmentDetails.packageDescription,
             },
             Dimensions: {
               UnitOfMeasurement: {
                 Code: "IN",
                 Description: "Inches",
               },
-              Length: payload.packageLength,
-              Width: payload.packageWidth,
-              Height: payload.packageHeight,
+              Length: payload.packageShipmentDetails.packageLength,
+              Width: payload.packageShipmentDetails.packageWidth,
+              Height: payload.packageShipmentDetails.packageHeight,
             },
             PackageWeight: {
               UnitOfMeasurement: {
                 Code: "LBS",
                 Description: "Pounds",
               },
-              Weight: payload.packageWeight,
+              Weight: payload.packageShipmentDetails.packageWeight,
             },
           },
         },
@@ -119,7 +123,7 @@ export async function POST(req: NextRequest) {
 
     const version = "v2403"; // UPS API version
 
-    const token=req.cookies.get("access_token")?.value;
+    const token = req.cookies.get("access_token")?.value;
 
     if (!token?.valueOf) {
       throw new Error("Token not found");
@@ -139,7 +143,7 @@ export async function POST(req: NextRequest) {
         body: JSON.stringify(shipmentPayload),
       }
     );
-
+    console.log(response);
     // Handle UPS API response
     if (!response.ok) {
       const errorData = await response.json();

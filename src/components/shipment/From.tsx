@@ -1,57 +1,22 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
-import { Card, CardContent, CardDescription, CardTitle } from "../ui/card";
-import { Label } from "../ui/label";
-import { Input } from "../ui/input";
 import { toast } from "sonner";
-import { Button } from "../ui/button";
-import BasicSelect from "../BasicSelect";
-import axios from "axios";
-import { useAppDispatch, useAppSelector } from "@/redux/hooks";
-import { updateDataState } from "@/redux/dataSlice";
+import { Input } from "../ui/input";
+import { Label } from "../ui/label";
 import { Checkbox } from "../ui/checkbox";
+import { useEffect, useState } from "react";
+import { updateDataState } from "@/redux/dataSlice";
+import { useAppDispatch, useAppSelector } from "@/redux/hooks";
+import { Card, CardContent, CardDescription, CardTitle } from "../ui/card";
+import axios from "axios";
+import BasicSelect from "../BasicSelect";
 
 export default function From() {
   const dispatch = useAppDispatch();
   const shipmentData = useAppSelector((state) => state.data.from);
-  console.log("dataState", shipmentData);
   const [isEdit, setIsEdit] = useState(false);
   const [savedAddress, setSavedAddress] = useState<any>([]);
   const [selectedAddress, setSelectedAddress] = useState("");
-
-  const createAddressBookEntry = async () => {
-    try {
-      const config = {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      };
-
-      const addressData = {
-        fullName: shipmentData.senderName,
-        contactName: shipmentData.contactName,
-        addressLineOne: shipmentData.senderAddressLine,
-        zipCode: shipmentData.senderPostalCode,
-        city: shipmentData.senderCity,
-        state: shipmentData.senderState,
-        faxNumber: shipmentData.senderFax,
-        phoneNumber: shipmentData.senderFax,
-        country: shipmentData.senderCountry,
-        profileId: localStorage.getItem("selectedShipmentProfileId"),
-      };
-
-      const response = await axios.post(
-        "/api/address-book",
-        addressData,
-        config
-      );
-      toast.success(response.data.message);
-    } catch (error) {
-      console.error("Error creating address book entry:", error);
-      toast.error("An error occurred while creating the address book entry.");
-    }
-  };
 
   const getFroms = async () => {
     try {
@@ -83,39 +48,6 @@ export default function From() {
     value: item._id,
     label: item.contactName,
   }));
-
-  const updateAddressBookEntry = async () => {
-    try {
-      const config = {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      };
-
-      const addressData = {
-        fullName: shipmentData.senderName,
-        contactName: shipmentData.contactName,
-        addressLineOne: shipmentData.senderAddressLine,
-        zipCode: shipmentData.senderPostalCode,
-        city: shipmentData.senderCity,
-        state: shipmentData.senderState,
-        faxNumber: shipmentData.senderFax,
-        phoneNumber: shipmentData.senderFax,
-        country: shipmentData.senderCountry,
-        profileId: localStorage.getItem("selectedShipmentProfileId"),
-      };
-
-      const response = await axios.patch(
-        `/api/address-book/${selectedAddress}`,
-        addressData,
-        config
-      );
-      toast.success(response.data.message);
-    } catch (error) {
-      console.error("Error creating address book entry:", error);
-      toast.error("An error occurred while creating the address book entry.");
-    }
-  };
 
   return (
     <Card>
@@ -151,6 +83,7 @@ export default function From() {
                       senderFax: selectedAddressData.shipFromFax,
                       senderPhone: selectedAddressData.shipFromPhone,
                       senderCountry: selectedAddressData.shipFromCountry,
+                      selectedAddress: value,
                     },
                   })
                 );
@@ -365,7 +298,21 @@ export default function From() {
                 </div>
                 <div className="flex flex-col gap-2">
                   <div className="flex items-center space-x-2">
-                    <Checkbox id="terms" />
+                    <Checkbox
+                      id="edit"
+                      checked={shipmentData.edit}
+                      onCheckedChange={(checked) => {
+                        dispatch(
+                          updateDataState({
+                            path: ["from"],
+                            updates: {
+                              edit: checked,
+                              add: false,
+                            },
+                          })
+                        );
+                      }}
+                    />
                     <label
                       htmlFor="terms"
                       className="text-xs lg:text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
@@ -374,7 +321,21 @@ export default function From() {
                     </label>
                   </div>
                   <div className="flex items-center space-x-2">
-                    <Checkbox id="terms" />
+                    <Checkbox
+                      id="add"
+                      checked={shipmentData.add}
+                      onCheckedChange={(checked) => {
+                        dispatch(
+                          updateDataState({
+                            path: ["from"],
+                            updates: {
+                              add: checked,
+                              edit: false,
+                            },
+                          })
+                        );
+                      }}
+                    />
                     <label
                       htmlFor="terms"
                       className="text-xs lg:text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
@@ -382,21 +343,6 @@ export default function From() {
                       Save as New Address book
                     </label>
                   </div>
-                  <Button
-                    disabled={selectedAddress === ""}
-                    variant={selectedAddress === "" ? "outline" : "default"}
-                    onClick={() => {
-                      updateAddressBookEntry();
-                    }}
-                  ></Button>
-                  <Button
-                    variant={"default"}
-                    onClick={() => {
-                      createAddressBookEntry();
-                    }}
-                  >
-                    Save as New Address book
-                  </Button>
                 </div>
               </div>
             ) : (

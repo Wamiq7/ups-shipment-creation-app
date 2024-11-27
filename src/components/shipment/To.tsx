@@ -2,62 +2,21 @@
 
 import React, { useEffect, useState } from "react";
 import { Card, CardContent, CardDescription, CardTitle } from "../ui/card";
-import BasicSelect from "../BasicSelect";
 import { Label } from "../ui/label";
 import { Input } from "../ui/input";
 import { Checkbox } from "../ui/checkbox";
-import axios from "axios";
 import { toast } from "sonner";
-import { Button } from "../ui/button";
-import { set } from "mongoose";
+import { useAppDispatch, useAppSelector } from "@/redux/hooks";
+import { updateDataState } from "@/redux/dataSlice";
+import axios from "axios";
+import BasicSelect from "../BasicSelect";
 
-const themeOptions = [
-  { value: "light", label: "Light" },
-  { value: "dark", label: "Dark" },
-  { value: "system", label: "System" },
-];
-
-export default function To({ shipmentData, setShipmentData }) {
+export default function To() {
+  const dispatch = useAppDispatch();
+  const shipmentData = useAppSelector((state) => state.data.to);
   const [isEdit, setIsEdit] = useState(false);
   const [savedAddress, setSavedAddress] = useState<any>([]);
   const [selectedAddress, setSelectedAddress] = useState("");
-
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
-  ) => {
-    setShipmentData({ ...shipmentData, [e.target.name]: e.target.value });
-  };
-
-  const createAddressBookToEntry = async () => {
-    try {
-      const config = {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      };
-
-      const addressData = {
-        fullName: shipmentData.receiverName,
-        attentionName: shipmentData.receiverAttention,
-        addressLineOne: shipmentData.receiverAddressLine,
-        zipCode: shipmentData.receiverPostalCode,
-        city: shipmentData.receiverCity,
-        state: shipmentData.receiverState,
-        countryCode: shipmentData.receiverCountry,
-        profileId: localStorage.getItem("selectedShipmentProfileId"),
-      };
-
-      const response = await axios.post(
-        "/api/address-book/to",
-        addressData,
-        config
-      );
-      toast.success(response.data.message);
-    } catch (error) {
-      console.error("Error creating address book entry:", error);
-      toast.error("An error occurred while creating the address book entry.");
-    }
-  };
 
   const getTos = async () => {
     try {
@@ -90,37 +49,6 @@ export default function To({ shipmentData, setShipmentData }) {
     label: item.fullName,
   }));
 
-  const updateAddressBookToEntry = async () => {
-    try {
-      const config = {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      };
-
-      const addressData = {
-        fullName: shipmentData.receiverName,
-        attentionName: shipmentData.receiverAttention,
-        addressLineOne: shipmentData.receiverAddressLine,
-        zipCode: shipmentData.receiverPostalCode,
-        city: shipmentData.receiverCity,
-        state: shipmentData.receiverState,
-        countryCode: shipmentData.receiverCountry,
-        profileId: localStorage.getItem("selectedShipmentProfileId"),
-      };
-
-      const response = await axios.patch(
-        `/api/address-book/to/${selectedAddress}`,
-        addressData,
-        config
-      );
-      toast.success(response.data.message);
-    } catch (error) {
-      console.error("Error updating address book entry:", error);
-      toast.error("An error occurred while updating the address book entry.");
-    }
-  };
-
   return (
     <Card>
       <CardContent className="p-3 lg:px-6 flex gap-2 items-center lg:pt-6">
@@ -139,16 +67,21 @@ export default function To({ shipmentData, setShipmentData }) {
                   (item: any) => item._id === value
                 );
 
-                setShipmentData({
-                  ...shipmentData,
-                  receiverName: selectedAddressData.fullName,
-                  receiverAttention: selectedAddressData.attentionName,
-                  receiverAddressLine: selectedAddressData.addressLineOne,
-                  receiverPostalCode: selectedAddressData.zipCode,
-                  receiverCity: selectedAddressData.city,
-                  receiverState: selectedAddressData.state,
-                  receiverCountry: selectedAddressData.countryCode,
-                });
+                dispatch(
+                  updateDataState({
+                    path: ["to"],
+                    updates: {
+                      receiverName: selectedAddressData.fullName,
+                      receiverAttention: selectedAddressData.attentionName,
+                      receiverAddressLine: selectedAddressData.addressLineOne,
+                      receiverPostalCode: selectedAddressData.zipCode,
+                      receiverCity: selectedAddressData.city,
+                      receiverState: selectedAddressData.state,
+                      receiverCountry: selectedAddressData.countryCode,
+                      selectedAddress: value,
+                    },
+                  })
+                );
 
                 setSelectedAddress(value);
               }}
@@ -172,7 +105,16 @@ export default function To({ shipmentData, setShipmentData }) {
                       type="text"
                       name="receiverName"
                       value={shipmentData.receiverName}
-                      onChange={handleChange}
+                      onChange={(e) => {
+                        dispatch(
+                          updateDataState({
+                            path: ["to"],
+                            updates: {
+                              receiverName: e.target.value,
+                            },
+                          })
+                        );
+                      }}
                     />
                   </div>
                   <div className="grid w-full max-w-sm items-center gap-1.5">
@@ -183,7 +125,16 @@ export default function To({ shipmentData, setShipmentData }) {
                       type="text"
                       name="receiverAttention"
                       value={shipmentData.receiverAttention}
-                      onChange={handleChange}
+                      onChange={(e) => {
+                        dispatch(
+                          updateDataState({
+                            path: ["to"],
+                            updates: {
+                              receiverAttention: e.target.value,
+                            },
+                          })
+                        );
+                      }}
                     />
                   </div>
                 </div>
@@ -195,7 +146,16 @@ export default function To({ shipmentData, setShipmentData }) {
                     type="text"
                     name="receiverAddressLine"
                     value={shipmentData.receiverAddressLine}
-                    onChange={handleChange}
+                    onChange={(e) => {
+                      dispatch(
+                        updateDataState({
+                          path: ["to"],
+                          updates: {
+                            receiverAddressLine: e.target.value,
+                          },
+                        })
+                      );
+                    }}
                   />
                 </div>
                 <div className="flex gap-2">
@@ -207,7 +167,16 @@ export default function To({ shipmentData, setShipmentData }) {
                       type="text"
                       name="receiverPostalCode"
                       value={shipmentData.receiverPostalCode}
-                      onChange={handleChange}
+                      onChange={(e) => {
+                        dispatch(
+                          updateDataState({
+                            path: ["to"],
+                            updates: {
+                              receiverPostalCode: e.target.value,
+                            },
+                          })
+                        );
+                      }}
                     />
                   </div>
                   <div className="grid w-full max-w-sm items-center gap-1.5">
@@ -218,7 +187,16 @@ export default function To({ shipmentData, setShipmentData }) {
                       type="text"
                       name="receiverCity"
                       value={shipmentData.receiverCity}
-                      onChange={handleChange}
+                      onChange={(e) => {
+                        dispatch(
+                          updateDataState({
+                            path: ["to"],
+                            updates: {
+                              receiverCity: e.target.value,
+                            },
+                          })
+                        );
+                      }}
                     />
                   </div>
                   <div className="grid w-full max-w-sm items-center gap-1.5">
@@ -229,7 +207,16 @@ export default function To({ shipmentData, setShipmentData }) {
                       type="text"
                       name="receiverState"
                       value={shipmentData.receiverState}
-                      onChange={handleChange}
+                      onChange={(e) => {
+                        dispatch(
+                          updateDataState({
+                            path: ["to"],
+                            updates: {
+                              receiverState: e.target.value,
+                            },
+                          })
+                        );
+                      }}
                     />
                   </div>
                 </div>
@@ -242,28 +229,66 @@ export default function To({ shipmentData, setShipmentData }) {
                       type="text"
                       name="receiverCountry"
                       value={shipmentData.receiverCountry}
-                      onChange={handleChange}
+                      onChange={(e) => {
+                        dispatch(
+                          updateDataState({
+                            path: ["to"],
+                            updates: {
+                              receiverCountry: e.target.value,
+                            },
+                          })
+                        );
+                      }}
                     />
                   </div>
                 </div>
                 <div className="flex flex-col gap-2">
-                  <Button
-                    disabled={selectedAddress === ""}
-                    variant={selectedAddress === "" ? "outline" : "default"}
-                    onClick={() => {
-                      updateAddressBookToEntry();
-                    }}
-                  >
-                    Save Edits to this Address
-                  </Button>
-                  <Button
-                    variant={"default"}
-                    onClick={() => {
-                      createAddressBookToEntry();
-                    }}
-                  >
-                    Save as New Address book
-                  </Button>
+                  <div className="flex items-center space-x-2">
+                    <Checkbox
+                      id="edit-to"
+                      checked={shipmentData.edit}
+                      onCheckedChange={(checked) => {
+                        dispatch(
+                          updateDataState({
+                            path: ["to"],
+                            updates: {
+                              edit: checked,
+                              add: false,
+                            },
+                          })
+                        );
+                      }}
+                    />
+                    <label
+                      htmlFor="edit-to"
+                      className="text-xs lg:text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                    >
+                      Save Edits to this Address
+                    </label>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <Checkbox
+                      id="add-to"
+                      checked={shipmentData.add}
+                      onCheckedChange={(checked) => {
+                        dispatch(
+                          updateDataState({
+                            path: ["to"],
+                            updates: {
+                              add: checked,
+                              edit: false,
+                            },
+                          })
+                        );
+                      }}
+                    />
+                    <label
+                      htmlFor="add-to"
+                      className="text-xs lg:text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                    >
+                      Save as New Address book
+                    </label>
+                  </div>
                 </div>
               </div>
             ) : (

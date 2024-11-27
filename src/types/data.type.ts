@@ -14,6 +14,7 @@ interface From {
   extension: string;
   edit: boolean;
   add: boolean;
+  selectedAddress: string;
 }
 
 interface To {
@@ -30,6 +31,7 @@ interface To {
   extension: string;
   edit: boolean;
   add: boolean;
+  selectedAddress: string;
 }
 
 interface PackageShipmentDetails {
@@ -57,11 +59,12 @@ interface PickupLocation {
   shipFromState: string;
   shipFromPostalCode: string;
   shipFromCountry: string;
-  email: string; // New field
-  contactName: string; // New field
-  extension: string; // New field
-  edit: boolean; // New field
-  add: boolean; // New field
+  email: string;
+  contactName: string;
+  extension: string;
+  edit: boolean;
+  add: boolean;
+  selectedAddress: string;
 }
 
 interface PickupDetails {
@@ -73,6 +76,13 @@ interface PickupDetails {
 
 interface ShipmentProfile {
   name: string;
+  edit: boolean;
+  add: boolean;
+  selectedAddress: string;
+}
+
+interface pendingPickups {
+  pickupLocation: string;
 }
 
 export interface IDataState {
@@ -81,5 +91,6 @@ export interface IDataState {
   packageShipmentDetails: PackageShipmentDetails;
   pickUpLocation: PickupLocation;
   pickUpDetails: PickupDetails;
+  pendingPickups: pendingPickups;
   shipmentProfile: ShipmentProfile;
 }

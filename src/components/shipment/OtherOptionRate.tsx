@@ -8,7 +8,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
-export default function OtherOptionRate({ rating }) {
+export default function OtherOptionRate() {
   return (
     <Card>
       <CardHeader className="bg-c-gray-accent-head rounded-t-xl px-6 py-2 text-white">
@@ -33,9 +33,7 @@ export default function OtherOptionRate({ rating }) {
               <TableCell className="h-7 lg:h-9 text-xs lg:text-sm">
                 Wednesday 11/06 by End of day
               </TableCell>
-              <TableCell className="h-7 lg:h-9 text-xs lg:text-sm">
-                ${rating?.RatedShipment?.TotalCharges?.MonetaryValue || 0}
-              </TableCell>
+              <TableCell className="h-7 lg:h-9 text-xs lg:text-sm">0</TableCell>
             </TableRow>
           </TableBody>
         </Table>

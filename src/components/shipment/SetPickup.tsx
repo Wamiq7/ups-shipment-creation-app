@@ -9,30 +9,19 @@ import { Input } from "../ui/input";
 import BasicSelect from "../BasicSelect";
 import { Checkbox } from "../ui/checkbox";
 import { CalendarInput } from "../CalenderInput";
-import axios from "axios";
 import { toast } from "sonner";
-import { set } from "mongoose";
-import { Button } from "../ui/button";
+import { useAppDispatch, useAppSelector } from "@/redux/hooks";
+import { updateDataState } from "@/redux/dataSlice";
+import axios from "axios";
 
 export default function SetPickup() {
+  const dispatch = useAppDispatch();
+  const shipmentData = useAppSelector((state) => state.data);
   const [isEdit, setIsEdit] = useState(false);
   const [isEdit2, setIsEdit2] = useState(false);
   const [onCallPickup, setOnCallPickup] = useState(false);
   const [savedAddress, setSavedAddress] = useState<any>([]);
   const [selectedAddress, setSelectedAddress] = useState("");
-
-  const [pickupLocation, setPickupLocation] = useState({
-    countryOrTerritory: "",
-    fullName: "",
-    contactName: "",
-    addressLineOne: "",
-    zipCode: "",
-    city: "",
-    state: "",
-    email: "",
-    phone: "",
-    extension: "",
-  });
 
   const handlePickupChange = (value) => {
     setOnCallPickup(value === "option-two");
@@ -43,40 +32,6 @@ export default function SetPickup() {
     { value: "dark", label: "Dark" },
     { value: "system", label: "System" },
   ];
-
-  const createPickupLocation = async () => {
-    try {
-      const config = {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      };
-
-      const addressData = {
-        countryOrTerritory: pickupLocation.countryOrTerritory,
-        fullName: pickupLocation.fullName,
-        contactName: pickupLocation.contactName,
-        addressLineOne: pickupLocation.addressLineOne,
-        zipCode: pickupLocation.zipCode,
-        city: pickupLocation.city,
-        state: pickupLocation.state,
-        email: pickupLocation.email,
-        phone: pickupLocation.phone,
-        extension: pickupLocation.extension,
-        profileId: localStorage.getItem("selectedShipmentProfileId"),
-      };
-
-      const response = await axios.post(
-        "/api/address-book/pickup-location",
-        addressData,
-        config
-      );
-      toast.success(response.data.message);
-    } catch (error) {
-      console.error("Error creating address book entry:", error);
-      toast.error("An error occurred while creating the address book entry.");
-    }
-  };
 
   const getPickupLocations = async () => {
     try {
@@ -109,40 +64,6 @@ export default function SetPickup() {
     label: item.contactName,
   }));
 
-  const updatePickupLocation = async () => {
-    try {
-      const config = {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      };
-
-      const addressData = {
-        countryOrTerritory: pickupLocation.countryOrTerritory,
-        fullName: pickupLocation.fullName,
-        contactName: pickupLocation.contactName,
-        addressLineOne: pickupLocation.addressLineOne,
-        zipCode: pickupLocation.zipCode,
-        city: pickupLocation.city,
-        state: pickupLocation.state,
-        email: pickupLocation.email,
-        phone: pickupLocation.phone,
-        extension: pickupLocation.extension,
-        profileId: localStorage.getItem("selectedShipmentProfileId"),
-      };
-
-      const response = await axios.patch(
-        `/api/address-book/pickup-location/${selectedAddress}`,
-        addressData,
-        config
-      );
-      toast.success(response.data.message);
-    } catch (error) {
-      console.error("Error updating address book entry:", error);
-      toast.error("An error occurred while updating the address book entry.");
-    }
-  };
-
   return (
     <Card>
       <CardHeader className="bg-c-gray-accent-head rounded-t-xl px-6 py-2 text-white">
@@ -173,7 +94,16 @@ export default function SetPickup() {
             <CalendarInput
               label="Date of Birth"
               placeholder="Select date"
-              onDateChange={(date) => console.log("Selected date:", date)}
+              onDateChange={(date) =>
+                dispatch(
+                  updateDataState({
+                    path: ["pickUpLocation"],
+                    updates: {
+                      pickupDate: date,
+                    },
+                  })
+                )
+              }
             />
             {/* Pickup  Location */}
             <BasicSelect
@@ -185,18 +115,24 @@ export default function SetPickup() {
                   (item: any) => item._id === value
                 );
 
-                setPickupLocation({
-                  countryOrTerritory: selectedAddressData.countryOrTerritory,
-                  fullName: selectedAddressData.fullName,
-                  contactName: selectedAddressData.contactName,
-                  addressLineOne: selectedAddressData.addressLineOne,
-                  zipCode: selectedAddressData.zipCode,
-                  city: selectedAddressData.city,
-                  state: selectedAddressData.state,
-                  email: selectedAddressData.email,
-                  phone: selectedAddressData.phone,
-                  extension: selectedAddressData.extension,
-                });
+                dispatch(
+                  updateDataState({
+                    path: ["pickUpLocation"],
+                    updates: {
+                      shipFromCountry: selectedAddressData.countryOrTerritory,
+                      shipFromName: selectedAddressData.fullName,
+                      contactName: selectedAddressData.contactName,
+                      shipFromAddressLine: selectedAddressData.addressLineOne,
+                      shipFromPostalCode: selectedAddressData.zipCode,
+                      shipFromCity: selectedAddressData.city,
+                      shipFromState: selectedAddressData.state,
+                      email: selectedAddressData.email,
+                      shipFromPhone: selectedAddressData.phone,
+                      extension: selectedAddressData.extension,
+                      selectedAddress: value,
+                    },
+                  })
+                );
 
                 setSelectedAddress(value);
               }}
@@ -216,185 +152,239 @@ export default function SetPickup() {
               {isEdit ? (
                 <div className="flex flex-col gap-3">
                   <div className="grid w-full max-w-sm items-center gap-1.5">
-                    <Label htmlFor="email">Country or Territory *</Label>{" "}
+                    <Label>Country or Territory *</Label>{" "}
                     <BasicSelect
                       options={themeOptions}
                       placeholder="Country or Territory"
-                      value={pickupLocation.countryOrTerritory}
-                      onChange={(value) =>
-                        setPickupLocation({
-                          ...pickupLocation,
-                          countryOrTerritory: value,
-                        })
-                      }
+                      value={shipmentData.pickUpLocation.shipFromCountry}
+                      onChange={(value) => {
+                        dispatch(
+                          updateDataState({
+                            path: ["pickUpLocation"],
+                            updates: {
+                              shipFromCountry: value,
+                            },
+                          })
+                        );
+                      }}
                     />
                   </div>
                   <div className="flex gap-2">
                     <div className="grid w-full max-w-sm items-center gap-1.5">
-                      <Label htmlFor="email" className="text-xs">
+                      <Label className="text-xs">
                         Full Name or Company Name *
                       </Label>
                       <Input
                         type="text"
                         placeholder=""
-                        value={pickupLocation.fullName}
-                        onChange={(e) =>
-                          setPickupLocation({
-                            ...pickupLocation,
-                            fullName: e.target.value,
-                          })
-                        }
+                        value={shipmentData.pickUpLocation.shipFromName}
+                        onChange={(e) => {
+                          dispatch(
+                            updateDataState({
+                              path: ["pickUpLocation"],
+                              updates: {
+                                shipFromName: e.target.value,
+                              },
+                            })
+                          );
+                        }}
                       />
                     </div>
                     <div className="grid w-full max-w-sm items-center gap-1.5">
-                      <Label htmlFor="email" className="text-xs">
-                        Contact Name
-                      </Label>
+                      <Label className="text-xs">Contact Name</Label>
                       <Input
                         type="text"
                         placeholder=""
-                        value={pickupLocation.contactName}
-                        onChange={(e) =>
-                          setPickupLocation({
-                            ...pickupLocation,
-                            contactName: e.target.value,
-                          })
-                        }
+                        value={shipmentData.pickUpLocation.contactName}
+                        onChange={(e) => {
+                          dispatch(
+                            updateDataState({
+                              path: ["pickUpLocation"],
+                              updates: {
+                                contactName: e.target.value,
+                              },
+                            })
+                          );
+                        }}
                       />
                     </div>
                   </div>
                   <div className="grid w-full max-w-sm items-center gap-1.5">
-                    <Label htmlFor="email" className="text-xs">
-                      Address Line 1 *
-                    </Label>
+                    <Label className="text-xs">Address Line 1 *</Label>
                     <Input
                       type="text"
                       placeholder=""
-                      value={pickupLocation.addressLineOne}
-                      onChange={(e) =>
-                        setPickupLocation({
-                          ...pickupLocation,
-                          addressLineOne: e.target.value,
-                        })
-                      }
+                      value={shipmentData.pickUpLocation.shipFromAddressLine}
+                      onChange={(e) => {
+                        dispatch(
+                          updateDataState({
+                            path: ["pickUpLocation"],
+                            updates: {
+                              shipFromAddressLine: e.target.value,
+                            },
+                          })
+                        );
+                      }}
                     />
                   </div>
                   <div className="flex gap-2">
                     <div className="grid w-full max-w-sm items-center gap-1.5">
-                      <Label htmlFor="email" className="text-xs">
-                        Zip Code *
-                      </Label>
+                      <Label className="text-xs">Zip Code *</Label>
                       <Input
                         type="text"
                         placeholder=""
-                        value={pickupLocation.zipCode}
-                        onChange={(e) =>
-                          setPickupLocation({
-                            ...pickupLocation,
-                            zipCode: e.target.value,
-                          })
-                        }
+                        value={shipmentData.pickUpLocation.shipFromPostalCode}
+                        onChange={(e) => {
+                          dispatch(
+                            updateDataState({
+                              path: ["pickUpLocation"],
+                              updates: {
+                                shipFromPostalCode: e.target.value,
+                              },
+                            })
+                          );
+                        }}
                       />
                     </div>
                     <div className="grid w-full max-w-sm items-center gap-1.5">
-                      <Label htmlFor="email" className="text-xs">
-                        City *
-                      </Label>
+                      <Label className="text-xs">City *</Label>
                       <Input
                         placeholder=""
-                        value={pickupLocation.city}
-                        onChange={(e) =>
-                          setPickupLocation({
-                            ...pickupLocation,
-                            city: e.target.value,
-                          })
-                        }
+                        value={shipmentData.pickUpLocation.shipFromCity}
+                        onChange={(e) => {
+                          dispatch(
+                            updateDataState({
+                              path: ["pickUpLocation"],
+                              updates: {
+                                shipFromCity: e.target.value,
+                              },
+                            })
+                          );
+                        }}
                       />
                     </div>
                     <div className="grid w-full max-w-sm items-center gap-1.5">
-                      <Label htmlFor="email" className="text-xs">
-                        State *
-                      </Label>
+                      <Label className="text-xs">State *</Label>
                       <BasicSelect
                         options={themeOptions}
-                        placeholder="Country or Territory"
-                        value={pickupLocation.state}
-                        onChange={(value) =>
-                          setPickupLocation({
-                            ...pickupLocation,
-                            state: value,
-                          })
-                        }
+                        placeholder="State"
+                        value={shipmentData.pickUpLocation.shipFromState}
+                        onChange={(value) => {
+                          dispatch(
+                            updateDataState({
+                              path: ["pickUpLocation"],
+                              updates: {
+                                shipFromState: value,
+                              },
+                            })
+                          );
+                        }}
                       />
                     </div>
                   </div>
                   <div className="flex gap-2">
                     <div className="grid w-full max-w-sm items-center gap-1.5">
-                      <Label htmlFor="email" className="text-xs">
-                        Email
-                      </Label>
+                      <Label className="text-xs">Email</Label>
                       <Input
                         type="email"
-                        id="email"
-                        value={pickupLocation.email}
                         placeholder=""
-                        onChange={(e) =>
-                          setPickupLocation({
-                            ...pickupLocation,
-                            email: e.target.value,
-                          })
-                        }
+                        value={shipmentData.pickUpLocation.email}
+                        onChange={(e) => {
+                          dispatch(
+                            updateDataState({
+                              path: ["pickUpLocation"],
+                              updates: {
+                                email: e.target.value,
+                              },
+                            })
+                          );
+                        }}
                       />
                     </div>
                     <div className="grid w-full max-w-sm items-center gap-1.5">
-                      <Label htmlFor="email" className="text-xs">
-                        Phone *
-                      </Label>
+                      <Label className="text-xs">Phone *</Label>
                       <Input
                         type="text"
                         placeholder=""
-                        value={pickupLocation.phone}
-                        onChange={(e) =>
-                          setPickupLocation({
-                            ...pickupLocation,
-                            phone: e.target.value,
-                          })
-                        }
+                        value={shipmentData.pickUpLocation.shipFromPhone}
+                        onChange={(e) => {
+                          dispatch(
+                            updateDataState({
+                              path: ["pickUpLocation"],
+                              updates: {
+                                shipFromPhone: e.target.value,
+                              },
+                            })
+                          );
+                        }}
                       />
                     </div>
                     <div className="grid w-full max-w-sm items-center gap-1.5">
-                      <Label htmlFor="email" className="text-xs">
-                        Extension
-                      </Label>{" "}
+                      <Label className="text-xs">Extension</Label>{" "}
                       <BasicSelect
                         options={themeOptions}
-                        placeholder="Country or Territory"
-                        value={pickupLocation.extension}
-                        onChange={(value) =>
-                          setPickupLocation({
-                            ...pickupLocation,
-                            extension: value,
-                          })
-                        }
+                        placeholder="Extension"
+                        value={shipmentData.pickUpLocation.extension}
+                        onChange={(value) => {
+                          dispatch(
+                            updateDataState({
+                              path: ["pickUpLocation"],
+                              updates: {
+                                extension: value,
+                              },
+                            })
+                          );
+                        }}
                       />
                     </div>
                   </div>
-                  <div className="flex gap-2">
-                    <Button
-                      disabled={selectedAddress === ""}
-                      variant={selectedAddress === "" ? "outline" : "default"}
-                      onClick={() => {
-                        updatePickupLocation();
-                      }}
-                    >
-                      Save Edits to this Address
-                    </Button>
-                    <Button
-                      variant={"default"}
-                      onClick={() => createPickupLocation()}
-                    >
-                      Save as New Address book
-                    </Button>
+                  <div className="flex gap-4">
+                    <div className="flex items-center space-x-2">
+                      <Checkbox
+                        id="edit"
+                        checked={shipmentData.pickUpLocation.edit}
+                        onCheckedChange={(checked) => {
+                          dispatch(
+                            updateDataState({
+                              path: ["pickUpLocation"],
+                              updates: {
+                                edit: checked,
+                                add: false,
+                              },
+                            })
+                          );
+                        }}
+                      />
+                      <label
+                        htmlFor="terms"
+                        className="text-xs lg:text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                      >
+                        Save Edits to this Address
+                      </label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <Checkbox
+                        id="add"
+                        checked={shipmentData.pickUpLocation.add}
+                        onCheckedChange={(checked) => {
+                          dispatch(
+                            updateDataState({
+                              path: ["pickUpLocation"],
+                              updates: {
+                                add: checked,
+                                edit: false,
+                              },
+                            })
+                          );
+                        }}
+                      />
+                      <label
+                        htmlFor="terms"
+                        className="text-xs lg:text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                      >
+                        Save as New Address book
+                      </label>
+                    </div>
                   </div>
                 </div>
               ) : (
@@ -420,36 +410,76 @@ export default function SetPickup() {
               {isEdit2 ? (
                 <div className="grid grid-cols-2 gap-2 lg:gap-4">
                   <div className="grid w-full max-w-sm items-center gap-1.5">
-                    <Label htmlFor="email" className="text-xs">
-                      State *
-                    </Label>
+                    <Label className="text-xs">Earliest*</Label>
                     <BasicSelect
                       options={themeOptions}
-                      placeholder="Country or Territory"
-                      value=""
+                      placeholder="Earliest"
+                      value={shipmentData.pickUpDetails.earliest}
+                      onChange={(value) => {
+                        dispatch(
+                          updateDataState({
+                            path: ["pickUpDetails"],
+                            updates: {
+                              earliest: value,
+                            },
+                          })
+                        );
+                      }}
                     />
                   </div>
                   <div className="grid w-full max-w-sm items-center gap-1.5">
-                    <Label htmlFor="email" className="text-xs">
-                      State *
-                    </Label>
+                    <Label className="text-xs">Latest*</Label>
                     <BasicSelect
                       options={themeOptions}
-                      placeholder="Country or Territory"
-                      value=""
+                      placeholder="Latest"
+                      value={shipmentData.pickUpDetails.latest}
+                      onChange={(value) => {
+                        dispatch(
+                          updateDataState({
+                            path: ["pickUpDetails"],
+                            updates: {
+                              latest: value,
+                            },
+                          })
+                        );
+                      }}
                     />
                   </div>
                   <div className="grid w-full max-w-sm items-center gap-1.5">
-                    <Label htmlFor="email" className="text-xs">
-                      Zip Code *
-                    </Label>
-                    <Input type="email" id="email" placeholder="Email" />
+                    <Label className="text-xs">Preferred Pickup Location</Label>
+                    <Input
+                      type="text"
+                      placeholder="Preferred Pickup Location"
+                      value={shipmentData.pickUpDetails.preferredPickupLocation}
+                      onChange={(e) => {
+                        dispatch(
+                          updateDataState({
+                            path: ["pickUpDetails"],
+                            updates: {
+                              preferredPickupLocation: e.target.value,
+                            },
+                          })
+                        );
+                      }}
+                    />
                   </div>
                   <div className="grid w-full max-w-sm items-center gap-1.5">
-                    <Label htmlFor="email" className="text-xs">
-                      City *
-                    </Label>
-                    <Input type="email" id="email" placeholder="Email" />
+                    <Label className="text-xs">Pickup Reference</Label>
+                    <Input
+                      type="text"
+                      placeholder="Pickup Reference"
+                      value={shipmentData.pickUpDetails.pickupReference}
+                      onChange={(e) => {
+                        dispatch(
+                          updateDataState({
+                            path: ["pickUpDetails"],
+                            updates: {
+                              pickupReference: e.target.value,
+                            },
+                          })
+                        );
+                      }}
+                    />
                   </div>
                 </div>
               ) : (
@@ -465,7 +495,20 @@ export default function SetPickup() {
           </div>
         ) : (
           <>
-            <Textarea placeholder="Pickup Location" />
+            <Textarea
+              placeholder="Pickup Location"
+              value={shipmentData.pendingPickups.pickupLocation}
+              onChange={(e) => {
+                dispatch(
+                  updateDataState({
+                    path: ["pendingPickups"],
+                    updates: {
+                      pickupLocation: e.target.value,
+                    },
+                  })
+                );
+              }}
+            />
             <p className="text-xs max-w-[65%]">
               Company Name, Contact Name, Street Address, City, State, zip code,
               Country, email address, phone number

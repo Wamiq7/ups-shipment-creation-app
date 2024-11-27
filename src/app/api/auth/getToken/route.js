@@ -35,7 +35,7 @@ export async function POST() {
 
     return NextResponse.json({ token });
   } catch (error) {
-    console.error("Error fetching token:", error.message);
+    console.error("Error fetching token:", error);
     return NextResponse.json(
       { error: "Failed to fetch token" },
       { status: 500 }

@@ -1,9 +1,11 @@
+import { Label } from "../ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { CalendarInput } from "../CalenderInput";
 import { InputWithLabel } from "../InputWithLabel";
 import { Checkbox } from "../ui/checkbox";
+import { useAppDispatch, useAppSelector } from "@/redux/hooks";
+import { updateDataState } from "@/redux/dataSlice";
 import BasicSelect from "../BasicSelect";
-import { Label } from "../ui/label";
 
 const packageOptions = [
   { value: "03", label: "03" },
@@ -17,24 +19,33 @@ const serviceTypes = [
   { value: "01", label: "Next Day Air" },
 ];
 
-const PackageInput = ({ shipmentData, setShipmentData }) => {
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
-  ) => {
-    const { name, value } = e.target;
-    setShipmentData({
-      ...shipmentData,
-      [name]: value,
-    });
-  };
+const PackageInput = () => {
+  const dispatch = useAppDispatch();
+  const shipmentData = useAppSelector(
+    (state) => state.data.packageShipmentDetails
+  );
+
+  // const handleChange = (
+  //   e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  // ) => {
+  //   const { name, value } = e.target;
+  //   setShipmentData({
+  //     ...shipmentData,
+  //     [name]: value,
+  //   });
+  // };
 
   const handleSignature = (e: any) => {
     console.log(e.target.checked);
 
-    setShipmentData({
-      ...shipmentData,
-      [`isSignatureRequired`]: e.target.checked,
-    });
+    dispatch(
+      updateDataState({
+        path: ["packageShipmentDetails"],
+        updates: {
+          isSignatureRequired: e.target.checked,
+        },
+      })
+    );
   };
 
   return (
@@ -44,10 +55,17 @@ const PackageInput = ({ shipmentData, setShipmentData }) => {
           label="ea"
           type="number"
           placeholder="1"
-          id="pkgeQuantity"
-          name="pkgeQuantity"
           value={shipmentData.pkgeQuantity}
-          onChange={handleChange}
+          onChange={(e) => {
+            dispatch(
+              updateDataState({
+                path: ["packageShipmentDetails"],
+                updates: {
+                  pkgeQuantity: e.target.value,
+                },
+              })
+            );
+          }}
         />
       </div>
 
@@ -64,7 +82,16 @@ const PackageInput = ({ shipmentData, setShipmentData }) => {
                 id="packageLength"
                 name="packageLength"
                 value={shipmentData.packageLength || ""}
-                onChange={handleChange}
+                onChange={(e) => {
+                  dispatch(
+                    updateDataState({
+                      path: ["packageShipmentDetails"],
+                      updates: {
+                        packageLength: e.target.value,
+                      },
+                    })
+                  );
+                }}
               />
               <InputWithLabel
                 label="Width (in)"
@@ -73,7 +100,16 @@ const PackageInput = ({ shipmentData, setShipmentData }) => {
                 id="packageWidth"
                 name="packageWidth"
                 value={shipmentData.packageWidth || ""}
-                onChange={handleChange}
+                onChange={(e) => {
+                  dispatch(
+                    updateDataState({
+                      path: ["packageShipmentDetails"],
+                      updates: {
+                        packageWidth: e.target.value,
+                      },
+                    })
+                  );
+                }}
               />
               <InputWithLabel
                 label="Height (in)"
@@ -82,7 +118,16 @@ const PackageInput = ({ shipmentData, setShipmentData }) => {
                 id="packageHeight"
                 name="packageHeight"
                 value={shipmentData.packageHeight || ""}
-                onChange={handleChange}
+                onChange={(e) => {
+                  dispatch(
+                    updateDataState({
+                      path: ["packageShipmentDetails"],
+                      updates: {
+                        packageHeight: e.target.value,
+                      },
+                    })
+                  );
+                }}
               />
             </div>
           </div>
@@ -99,7 +144,16 @@ const PackageInput = ({ shipmentData, setShipmentData }) => {
           id="packageWeight"
           name="packageWeight"
           value={shipmentData.packageWeight || ""}
-          onChange={handleChange}
+          onChange={(e) => {
+            dispatch(
+              updateDataState({
+                path: ["packageShipmentDetails"],
+                updates: {
+                  packageWeight: e.target.value,
+                },
+              })
+            );
+          }}
         />
       </div>
 
@@ -118,22 +172,11 @@ const PackageInput = ({ shipmentData, setShipmentData }) => {
   );
 };
 
-export default function PackageShipmentDetails({
-  shipmentData,
-  setShipmentData,
-}) {
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
-  ) => {
-    setShipmentData({ ...shipmentData, [e.target.name]: e.target.value });
-  };
-
-  const handleServiceTypeChange = (value: string) => {
-    setShipmentData({
-      ...shipmentData,
-      serviceType: value,
-    });
-  };
+export default function PackageShipmentDetails() {
+  const dispatch = useAppDispatch();
+  const shipmentData = useAppSelector(
+    (state) => state.data.packageShipmentDetails
+  );
 
   const selectedOption = serviceTypes.find(
     (option) => option.value === shipmentData?.serviceType
@@ -149,12 +192,25 @@ export default function PackageShipmentDetails({
       </CardHeader>
       <CardContent className="p-3 lg:px-6 flex flex-col items-start lg:pt-6">
         <div className="grid grid-cols-3 gap-2 lg:gap-3 w-full">
-          {/* <div className="grid w-full max-w-sm items-center gap-1.5"> */}
           <div className="grid w-full max-w-sm items-center gap-1.5">
             <Label htmlFor="email" className="text-xs">
               Ship date*
             </Label>
             <p>{shipmentData?.shipDate}</p>
+            <CalendarInput
+              label="Date of Birth"
+              placeholder="Select date"
+              onDateChange={(date) => {
+                dispatch(
+                  updateDataState({
+                    path: ["packageShipmentDetails"],
+                    updates: {
+                      shipDate: date,
+                    },
+                  })
+                );
+              }}
+            />
           </div>
           <div className="grid w-full max-w-sm items-center gap-1.5">
             <Label htmlFor="email" className="text-xs">
@@ -164,7 +220,16 @@ export default function PackageShipmentDetails({
               options={serviceTypes}
               placeholder={selectedLabel}
               value={shipmentData?.serviceType}
-              onChange={handleServiceTypeChange}
+              onChange={(value) => {
+                dispatch(
+                  updateDataState({
+                    path: ["packageShipmentDetails"],
+                    updates: {
+                      serviceType: value,
+                    },
+                  })
+                );
+              }}
             />
           </div>
           <div className="grid w-full max-w-sm items-center gap-1.5">
@@ -175,6 +240,16 @@ export default function PackageShipmentDetails({
               value={shipmentData.packageType}
               options={packageOptions}
               placeholder=""
+              onChange={(value) => {
+                dispatch(
+                  updateDataState({
+                    path: ["packageShipmentDetails"],
+                    updates: {
+                      packageType: value,
+                    },
+                  })
+                );
+              }}
             />
           </div>
         </div>
@@ -210,10 +285,7 @@ export default function PackageShipmentDetails({
             </div>
           </div>
         </div>
-        <PackageInput
-          shipmentData={shipmentData}
-          setShipmentData={setShipmentData}
-        />
+        <PackageInput />
         <button className="text-c-blue-accent italic text-xs hover:underline">
           + Add another Package
         </button>

@@ -18,9 +18,10 @@ const initialState: IDataState = {
     // Data not going in api but present in the form
     contactName: "dsadsadsa",
     email: "test@test.com",
-    extension: "1234567890",
+    extension: " ",
     edit: false,
     add: true,
+    selectedAddress: "",
   },
   to: {
     receiverName: "Happy Dog Pet Supply",
@@ -37,6 +38,7 @@ const initialState: IDataState = {
     extension: "1234567890",
     edit: false,
     add: true,
+    selectedAddress: "",
   },
   packageShipmentDetails: {
     shipDate: new Date().toLocaleDateString(),
@@ -67,7 +69,8 @@ const initialState: IDataState = {
     extension: "dasdas",
     pickupDate: "2023-09-22T00:00:00.000Z",
     edit: false,
-    add: true,
+    add: false,
+    selectedAddress: "",
   },
   pickUpDetails: {
     // Data not going in api but present in the form
@@ -76,8 +79,14 @@ const initialState: IDataState = {
     preferredPickupLocation: "1160b_74",
     pickupReference: "1160b_74",
   },
+  pendingPickups: {
+    pickupLocation: "",
+  },
   shipmentProfile: {
     name: "Shipment Profile",
+    edit: false,
+    add: true,
+    selectedAddress: "",
   },
 };
 
