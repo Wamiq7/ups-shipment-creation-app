@@ -25,24 +25,12 @@ const PackageInput = () => {
     (state) => state.data.packageShipmentDetails
   );
 
-  // const handleChange = (
-  //   e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
-  // ) => {
-  //   const { name, value } = e.target;
-  //   setShipmentData({
-  //     ...shipmentData,
-  //     [name]: value,
-  //   });
-  // };
-
-  const handleSignature = (e: any) => {
-    console.log(e.target.checked);
-
+  const handleSignature = (checked) => {
     dispatch(
       updateDataState({
         path: ["packageShipmentDetails"],
         updates: {
-          isSignatureRequired: e.target.checked,
+          isSignatureRequired: checked,
         },
       })
     );
@@ -164,7 +152,7 @@ const PackageInput = () => {
             id="isSignatureRequired"
             name="isSignatureRequired"
             checked={shipmentData.isSignatureRequired}
-            onChange={handleSignature} // Works fine with Checkbox components from libraries
+            onCheckedChange={handleSignature}
           />
         </div>
       </div>
@@ -201,11 +189,14 @@ export default function PackageShipmentDetails() {
               label="Date of Birth"
               placeholder="Select date"
               onDateChange={(date) => {
+                // Convert Date object to ISO string or timestamp
+                const formattedDate = date?.toISOString(); // or date.getTime() for timestamp
+
                 dispatch(
                   updateDataState({
                     path: ["packageShipmentDetails"],
                     updates: {
-                      shipDate: date,
+                      shipDate: formattedDate, // or formattedDate (timestamp)
                     },
                   })
                 );

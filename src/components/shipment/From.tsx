@@ -287,7 +287,7 @@ export default function From() {
                           updateDataState({
                             path: ["from"],
                             updates: {
-                              senderName: e.target.value,
+                              senderCountry: e.target.value,
                             },
                           })
                         );
