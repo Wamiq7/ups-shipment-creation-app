@@ -19,6 +19,12 @@ import { LoaderCircle } from "lucide-react";
 import Link from "next/link";
 import React, { useState } from "react";
 import { toast } from "sonner";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 
 const DataGrid = ({
   title,
@@ -27,16 +33,22 @@ const DataGrid = ({
   title: string;
   data: Record<string, any>;
 }) => (
-  <div className="bg-white p-4 rounded-lg shadow-md">
-    <h1 className="text-2xl font-semibold mb-4">{title}</h1>
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-      {Object.entries(data).map(([key, value]) => (
-        <div key={key} className="flex">
-          <div className="font-semibold capitalize w-1/2">{key}:</div>
-          <div className="w-1/2">{value?.toString()}</div>
-        </div>
-      ))}
-    </div>
+  <div className="rounded-lg shadow-md">
+    <Accordion type="single" collapsible>
+      <AccordionItem value="item-1">
+        <AccordionTrigger className="px-4 bg-gray-200 py-1 border-y-2 border-gray-300 font-semibold text-base">
+          {title}
+        </AccordionTrigger>
+        <AccordionContent className="grid grid-cols-1 md:grid-cols-2 gap-2 p-4">
+          {Object.entries(data).map(([key, value]) => (
+            <div key={key} className="flex">
+              <div className="font-semibold capitalize w-1/2">{key}:</div>
+              <div className="w-1/2">{value?.toString()}</div>
+            </div>
+          ))}
+        </AccordionContent>
+      </AccordionItem>
+    </Accordion>
   </div>
 );
 
@@ -233,15 +245,18 @@ export default function Review() {
   return (
     <>
       <Navbar />
-      <div className="p-3 lg:p-6 flex flex-col gap-8">
-        <h1 className="text-center text-3xl font-bold">Review</h1>
+      <div className="p-3 lg:p-6 flex flex-col gap-8 bg-white">
+        <h1 className="text-3xl font-bold">
+          <span className="border-b-2 border-yellow-400 pb-2">Create</span> a
+          Shipment
+        </h1>
         {shipmentData && (
           <>
             <DataGrid
               title="Shipment Profile"
               data={shipmentData.shipmentProfile}
             />
-            <DataGrid title="From" data={shipmentData.from} />
+            <DataGrid title="Ship From *" data={shipmentData.from} />
             <DataGrid title="To" data={shipmentData.to} />
             <DataGrid
               title="Package Shipment Details"
@@ -262,21 +277,27 @@ export default function Review() {
           </>
         )}
         {currentStep < 3 ? (
-          <div className="flex justify-center gap-4">
-            <Link href={"/"}>
-              <Button variant={"outline"}>Go Back</Button>
-            </Link>
+          <div className="flex gap-4 px-10">
             <Button
               onClick={() => {
                 handleSubmit();
               }}
+              className="bg-c-orange hover:bg-c-orange rounded-full px-4 text-gray-800"
             >
               {loading ? (
                 <LoaderCircle className="animate-spin text-white" />
               ) : (
-                "Create & Get Label"
+                "Create & Get Label(s)"
               )}
             </Button>
+            <Link href={"/"}>
+              <Button
+                variant={"link"}
+                className="underline text-blue-500 text-base"
+              >
+                Cancel Shipment
+              </Button>
+            </Link>
           </div>
         ) : (
           <div className="flex gap-4 justify-center">
