@@ -232,9 +232,53 @@ export default function Review() {
     }
   };
 
+
+  const createMultiPieceShipment = async (payload: any) => {
+    try {
+      setIsLoading(true);
+      const response = await fetch("/api/create-shipment/multi-piece-shipping", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ payload }),
+      });
+
+      const result = await response.json();
+
+      if (response.ok) {
+        setCurrentStep(4);
+        const imageData =
+          result.ShipmentResponse.ShipmentResults.PackageResults[0]
+            .ShippingLabel;
+        const imageSrc = `data:${imageData.ImageFormat.Code};base64,${imageData.GraphicImage}`;
+
+        setLabel(imageSrc);
+      } else {
+        alert("Failed to create shipment");
+      }
+    } catch (error) {
+      console.error("Error creating shipment:", error);
+      alert("An error occurred while creating the shipment");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const handleCreateShipment = async () => {
     try {
       const data = await createShipment(shipmentData);
+      console.log("Shipment response", data);
+    } catch (error) {
+      console.error("Error creating shipment:", error);
+      alert("An error occurred while creating the shipment");
+    }
+  };
+
+
+  const handleCreateMultiPieceShipment = async () => {
+    try {
+      console.log(shipmentData);
+
+      const data = await createMultiPieceShipment(shipmentData);
       console.log("Shipment response", data);
     } catch (error) {
       console.error("Error creating shipment:", error);
@@ -310,8 +354,11 @@ export default function Review() {
             </div>
             <Button
               onClick={() => {
-                handleCreateShipment();
-              }}
+                console.log(shipmentData.packageShipmentDetails.packages.length);
+
+                shipmentData.packageShipmentDetails.packages.length > 1 ? handleCreateMultiPieceShipment() : handleCreateShipment()
+              }
+              }
             >
               {loading ? (
                 <LoaderCircle className="animate-spin text-white" />
