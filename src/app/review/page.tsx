@@ -3,6 +3,7 @@
 import Navbar from "@/components/Navbar";
 import ProgressBar from "@/components/ProgressBar";
 import { Button } from "@/components/ui/button";
+import { CheckIcon, Cross1Icon, InfoCircledIcon, OpenInNewWindowIcon } from "@radix-ui/react-icons";
 import {
   useAddressBook,
   useCreatePackageShipment,
@@ -15,9 +16,9 @@ import {
   useUpdateToAddressBook,
 } from "@/hooks/apis";
 import { useAppSelector } from "@/redux/hooks";
-import { LoaderCircle } from "lucide-react";
+import { Edit2Icon, LoaderCircle } from "lucide-react";
 import Link from "next/link";
-import React, { useState } from "react";
+import React, { ReactNode, useState } from "react";
 import { toast } from "sonner";
 import {
   Accordion,
@@ -25,13 +26,15 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import { IDataState, IShipmentFrom, PackageShipmentDetails } from "@/types/data.type";
+import { useRouter } from "next/navigation";
 
 const DataGrid = ({
   title,
-  data,
+  body,
 }: {
   title: string;
-  data: Record<string, any>;
+  body: ReactNode;
 }) => (
   <div className="rounded-lg shadow-md">
     <Accordion type="single" collapsible>
@@ -39,13 +42,8 @@ const DataGrid = ({
         <AccordionTrigger className="px-4 bg-gray-200 py-1 border-y-2 border-gray-300 font-semibold text-base">
           {title}
         </AccordionTrigger>
-        <AccordionContent className="grid grid-cols-1 md:grid-cols-2 gap-2 p-4">
-          {Object.entries(data).map(([key, value]) => (
-            <div key={key} className="flex">
-              <div className="font-semibold capitalize w-1/2">{key}:</div>
-              <div className="w-1/2">{value?.toString()}</div>
-            </div>
-          ))}
+        <AccordionContent className="gap-2 py-3 px-4">
+          {body}
         </AccordionContent>
       </AccordionItem>
     </Accordion>
@@ -53,6 +51,8 @@ const DataGrid = ({
 );
 
 export default function Review() {
+  const router = useRouter();
+
   const [currentStep, setCurrentStep] = React.useState(1);
   const shipmentData = useAppSelector((state) => state.data);
   const [ratingsResponse, setRatingsResponse] = React.useState<any>(null);
@@ -127,10 +127,13 @@ export default function Review() {
         return data;
       } else {
         const errorData = await response.json();
+        console.error("Error in Ratings:", errorData);
+        alert("An error occurred while fetching ratings");
       }
     } catch (error) {
       setIsLoading(false);
       console.log(error);
+      alert("An error occurred while fetching ratings");
     }
   };
 
@@ -195,9 +198,9 @@ export default function Review() {
 
     // UPS Apis
     const data = await handleAddress(shipmentData);
-    if (data.XAVResponse.Response.ResponseStatus.Description === "Success") {
-      const data = await handleRatings(shipmentData);
-      setRatingsResponse(data);
+    if (data?.XAVResponse?.Response?.ResponseStatus?.Description === "Success") {
+      const ratingData = await handleRatings(shipmentData);
+      setRatingsResponse(ratingData);
       toast.success("Ratings fetched successfully");
     }
   };
@@ -231,7 +234,6 @@ export default function Review() {
       setIsLoading(false);
     }
   };
-
 
   const createMultiPieceShipment = async (payload: any) => {
     try {
@@ -273,7 +275,6 @@ export default function Review() {
     }
   };
 
-
   const handleCreateMultiPieceShipment = async () => {
     try {
       console.log(shipmentData);
@@ -286,38 +287,74 @@ export default function Review() {
     }
   };
 
+  // Handle Edit button clicks
+  const handleEdit = (section: string) => {
+    router.push(`/?edit=${section}`);
+  };
+
   return (
     <>
       <Navbar />
       <div className="p-3 lg:p-6 flex flex-col gap-8 bg-white">
         <h1 className="text-3xl font-bold">
-          <span className="border-b-2 border-yellow-400 pb-2">Create</span> a
-          Shipment
+          <span className="border-b-2 border-yellow-400 pb-2">Create</span> a Shipment
         </h1>
         {shipmentData && (
           <>
             <DataGrid
-              title="Shipment Profile"
-              data={shipmentData.shipmentProfile}
-            />
-            <DataGrid title="Ship From *" data={shipmentData.from} />
-            <DataGrid title="To" data={shipmentData.to} />
-            <DataGrid
-              title="Package Shipment Details"
-              data={shipmentData.packageShipmentDetails}
-            />
-            <DataGrid
-              title="Pending Pickups"
-              data={shipmentData.pendingPickups}
+              title="Ship From *"
+              body={
+                <ShipFromAndToBody
+                  data={shipmentData.from}
+                  onEdit={() => handleEdit("from")}
+                />
+              }
             />
             <DataGrid
-              title="Pickup Details"
-              data={shipmentData.pickUpDetails}
+              title="Ship To *"
+              body={
+                <ShipFromAndToBody
+                  data={shipmentData.to}
+                  onEdit={() => handleEdit("to")}
+                />
+              }
             />
             <DataGrid
-              title="Pickup Location"
-              data={shipmentData.pickUpLocation}
+              title="Package Information *"
+              body={
+                <PackageInformationBody
+                  data={shipmentData.packageShipmentDetails}
+                  onEdit={() => handleEdit("package")}
+                />
+              }
             />
+            <DataGrid
+              title="Shipping Service *"
+              body={
+                <ShippingServiceBody
+                  data={shipmentData}
+                  onEdit={() => handleEdit("shippingService")}
+                />
+              }
+            />
+            <DataGrid
+              title="Additional Options"
+              body={
+                <AdditionalOptionsBody
+                  onEdit={() => handleEdit("additionalOptions")}
+                />
+              }
+            />
+            <DataGrid
+              title="Payments *"
+              body={
+                <PaymentInfoBody
+                  shipmentDetails={shipmentData.from}
+                  onEdit={() => handleEdit("payments")}
+                />
+              }
+            />
+            <TermsAndConditions />
           </>
         )}
         {currentStep < 3 ? (
@@ -327,6 +364,7 @@ export default function Review() {
                 handleSubmit();
               }}
               className="bg-c-orange hover:bg-c-orange rounded-full px-4 text-gray-800"
+              disabled={loading}
             >
               {loading ? (
                 <LoaderCircle className="animate-spin text-white" />
@@ -354,11 +392,11 @@ export default function Review() {
             </div>
             <Button
               onClick={() => {
-                console.log(shipmentData.packageShipmentDetails.packages.length);
-
-                shipmentData.packageShipmentDetails.packages.length > 1 ? handleCreateMultiPieceShipment() : handleCreateShipment()
-              }
-              }
+                shipmentData.packageShipmentDetails.packages.length > 1
+                  ? handleCreateMultiPieceShipment()
+                  : handleCreateShipment();
+              }}
+              disabled={loading}
             >
               {loading ? (
                 <LoaderCircle className="animate-spin text-white" />
@@ -387,3 +425,263 @@ export default function Review() {
     </>
   );
 }
+
+const ShipFromAndToBody = ({
+  data,
+  onEdit,
+}: {
+  data: Record<string, any>;
+  onEdit: () => void;
+}) => {
+  return (
+    <div className="w-1/2 relative">
+      <div className="w-3/4">
+        {Object.entries(data).map(([_, value], index) => {
+          const hasValue =
+            typeof value === "string" ? !!value.trim() : !!value;
+          const isLastValue = index === Object.keys(data).length - 1;
+          if (hasValue) {
+            return (
+              <span
+                key={index}
+                className="mr-2 leading-8 font-semibold"
+              >
+                {value?.toString() + (!isLastValue ? "," : "")}{" "}
+              </span>
+            );
+          }
+          return null;
+        })}
+      </div>
+      <div className="absolute top-0 right-0">
+        <EditButton onEdit={onEdit} />
+      </div>
+    </div>
+  );
+};
+
+const PackageInformationBody = ({
+  data,
+  onEdit,
+}: {
+  data: PackageShipmentDetails;
+  onEdit: () => void;
+}) => {
+  return (
+    <div className="w-1/2 relative">
+      <div className="w-3/4">
+        <p className="font-semibold">
+          Total Packages: {data.packages.length}
+        </p>
+
+        <hr className="my-3" />
+        <div className="ml-12 space-y-4">
+          <ul className="ml-4 list-decimal">
+            {data.packages.map((pkg, index) => {
+              return (
+                <li key={index} className="font-semibold">
+                  {data.description} - {pkg.packageWeight} lbs -{" "}
+                  {pkg.dimensions.packageHeight} x {pkg.dimensions.packageLength} x{" "}
+                  {pkg.dimensions.packageWidth} in
+                </li>
+              );
+            })}
+          </ul>
+          <button
+            className="text-c-blue-accent italic text-xs hover:underline"
+          // onClick={handleAddPackage}
+          >
+            + Add another Package
+          </button>
+        </div>
+
+        <div className="flex mt-5">
+          <Button size={"sm"} variant={"outline"}>
+            Previous
+          </Button>
+          <Button size={"sm"} variant={"outline"}>
+            Next
+          </Button>
+        </div>
+
+        <div className="absolute top-0 right-0">
+          <EditButton onEdit={onEdit} />
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const ShippingServiceBody = ({
+  data,
+  onEdit,
+}: {
+  data: IDataState;
+  onEdit: () => void;
+}) => {
+  const {
+    pickUpLocation,
+    packageShipmentDetails,
+    pickUpDetails,
+  } = data;
+
+  return (
+    <div className="w-full space-y-3">
+      {/* Pickup Section */}
+      <div>
+        <div className="flex justify-between mb-2 border-b border-b-amber-300">
+          <h2 className="flex items-center text-lg font-semibold text-gray-700">
+            Do you need to schedule a pickup?
+          </h2>
+          <EditButton onEdit={onEdit} />
+        </div>
+        <p className="mt-1 text-gray-600">YES pick up my shipment.</p>
+        <p className="text-gray-600">
+          {pickUpLocation.shipFromName} is a "Daily Pickup" Account. Your pickups occur once each business day.
+        </p>
+        <p className="text-gray-600 font-medium">Pickup Location:</p>
+        <p className="text-gray-600">{pickUpLocation.shipFromName}</p>
+        <p className="text-gray-600">
+          {pickUpLocation.shipFromAddressLine}, {pickUpLocation.shipFromCity}, {pickUpLocation.shipFromState} {pickUpLocation.shipFromPostalCode}
+        </p>
+        <p className="text-gray-600">{pickUpLocation.shipFromCountry}</p>
+      </div>
+
+      {/* Hold for Customer Pickup Section */}
+      <div>
+        <div className="flex justify-between mb-2 border-b border-b-amber-300">
+          <h2 className="flex items-center text-lg font-semibold text-gray-700">
+            Hold for customer pickup at a UPS Access Point™ location?
+          </h2>
+          <EditButton onEdit={onEdit} />
+        </div>
+        <p className="mt-1 text-gray-600">No, deliver to receiver.</p>
+      </div>
+
+      {/* Delivery Section */}
+      <div className="space-y-2">
+        <div className="flex justify-between mb-2 border-b border-b-amber-300">
+          <h2 className="flex items-center text-lg font-semibold text-gray-700">
+            <InfoCircledIcon className="w-5 h-5 text-blue-500 mr-2" />
+            When would you like it delivered?
+          </h2>
+          <EditButton onEdit={onEdit} />
+        </div>
+        <p className="mt-1 text-gray-600">
+          {new Date(packageShipmentDetails.shipDate).toLocaleDateString("en-US", {
+            weekday: "long",
+            month: "long",
+            day: "numeric",
+            year: "numeric",
+          })}{" "}
+          by End of Day via our UPS Ground service for $15.08.
+        </p>
+        <p className="text-gray-600 text-sm bg-gray-200 p-2 !my-3">
+          Please note that extremely high volume on November 18, 2024 - January 10, 2025 may add
+          one day in transit for a small number of Ground shipments. See if you may be affected:{" "}
+          <a
+            href="https://www.ups.com/servicealerts"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-blue-500 underline"
+          >
+            Check for Service Impacts
+          </a>
+        </p>
+        <p className="text-gray-500 text-xs mt-2">
+          * Note: Confirm packages can be received at this address during regular hours.
+        </p>
+        <p className="text-gray-500 text-xs">
+          Above delivery dates/times are estimated, but not necessarily guaranteed. Refer to{" "}
+          <a
+            href="https://www.ups.com/guarantees"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-blue-500 underline"
+          >
+            Guarantees and Notices
+          </a>{" "}
+          for additional information.
+        </p>
+      </div>
+    </div>
+  );
+};
+
+const AdditionalOptionsBody = ({
+  onEdit,
+}: {
+  onEdit: () => void;
+}) => {
+  return (
+    <div className="w-full flex justify-between items-center">
+      <p className="font-semibold">None Selected</p>
+      <EditButton onEdit={onEdit} />
+    </div>
+  );
+};
+
+const PaymentInfoBody = ({
+  shipmentDetails,
+  onEdit,
+}: {
+  shipmentDetails: IShipmentFrom;
+  onEdit: () => void;
+}) => {
+  return (
+    <div className="w-full flex justify-between items-center">
+      <p className="font-semibold">
+        Bill Shipping Charges To: Shipper - {shipmentDetails.senderTaxId} - {shipmentDetails.senderName}
+      </p>
+      <EditButton onEdit={onEdit} />
+    </div>
+  );
+};
+
+const TermsAndConditions = () => {
+  return (
+    <div className="w-full">
+      <h2 className="text-lg font-semibold text-gray-700 mb-2  border-b border-b-amber-300">Terms and Conditions</h2>
+      <div className="ml-12">
+
+        <p className="text-gray-600 text-sm flex items-center gap-2">
+          Creating this shipment affirms that you have agreed to the UPS Tariff / Terms and Conditions of Service. View and download:{" "}
+          <a
+            href="https://www.ups.com/terms"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-blue-500 underline flex items-center gap-1"
+          >
+            UPS Tariff/Terms and Conditions of Service
+            <OpenInNewWindowIcon />
+          </a>{" "}
+        </p>
+        <p className="text-gray-600 text-sm mt-2 flex items-center gap-2">
+          You agree not to ship any items prohibited by UPS, or any UPS-regulated items except by express written contract with UPS.{" "}
+          <a
+            href="https://www.ups.com/prohibited-items"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-blue-500 underline flex  items-center gap-1"
+          >
+            List of Prohibited Articles for Shipping
+            <OpenInNewWindowIcon />
+          </a>{" "}
+        </p>
+      </div>
+    </div>
+  );
+};
+
+const EditButton = ({ onEdit }: { onEdit: () => void }) => {
+  return (
+    <Button
+      variant={"ghost"}
+      onClick={onEdit}
+      className="text-blue-500 underline flex items-center gap-1"
+    >
+      <Edit2Icon />
+      Edit
+    </Button>
+  );
+};

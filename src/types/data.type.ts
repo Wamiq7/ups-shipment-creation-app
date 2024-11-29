@@ -1,4 +1,4 @@
-interface From {
+export interface IShipmentFrom {
   senderName: string;
   senderAttention: string;
   senderTaxId: string;
@@ -45,7 +45,7 @@ interface Package {
   isSignatureRequired: boolean;
 }
 
-interface PackageShipmentDetails {
+export interface PackageShipmentDetails {
   shipDate: string;
   serviceType: string;
   packageType: string;
@@ -92,7 +92,7 @@ interface pendingPickups {
 }
 
 export interface IDataState {
-  from: From;
+  from: IShipmentFrom;
   to: To;
   packageShipmentDetails: PackageShipmentDetails;
   pickUpLocation: PickupLocation;
