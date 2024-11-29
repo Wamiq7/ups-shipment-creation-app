@@ -252,7 +252,7 @@ export default function Review() {
       const result = await response.json();
 
       if (response.ok) {
-        setCurrentStep(4);
+        setCurrentStep(5);
         const imageData =
           result.ShipmentResponse.ShipmentResults.PackageResults[0]
             .ShippingLabel;
