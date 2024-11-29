@@ -6,11 +6,13 @@ export interface IPickup {
   pickUpLocationId: string;
 }
 
+import { Button } from "@/components/ui/button";
 import React, { useCallback, useEffect, useState } from "react";
 
 export default function Tracking() {
   const [inquiryNumber, setInquiryNumber] = useState("dki9339k");
   const [pickups, setPickups] = useState<IPickup[]>([]);
+  const [selectedPickupRefNo, setSelectedPickupRefNo] = useState("");
   const [transId, setTransId] = useState(
     "HDBGJqCPsGUEfpTwHpJPfEUGd0a1CfWiGKyYy6wqKNbydtnv"
   );
@@ -44,7 +46,17 @@ export default function Tracking() {
       const res = await fetch("/api/tracking", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ inquiryNumber, transId, transactionSrc }),
+        body: JSON.stringify({
+          inquiryNumber,
+          transId,
+          transactionSrc,
+          referenceNumber: !!selectedPickupRefNo
+            ? selectedPickupRefNo
+            : pickups[0]?.refNo,
+          fromPickUpDate: new Date().toISOString(),
+          toPickUpDate: new Date().toISOString(),
+          refNumType: "SmallPackage. Valid values: SmallPackage, fgv",
+        }),
       });
 
       const data = await res.json();
@@ -56,7 +68,7 @@ export default function Tracking() {
 
   return (
     <div className="max-w-screen-sm mx-auto flex flex-col gap-4 mt-10">
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit} className="space-y-4">
         <h2 className="text-2xl font-semibold text-blue-600">
           Tracking shipment
         </h2>
@@ -87,12 +99,21 @@ export default function Tracking() {
             className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5"
           />
         </div>
-        <button
-          className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 focus:outline-none"
-          type="submit"
-        >
+        <div>
+          <label> Reference Number:</label>
+          <select
+            value={selectedPickupRefNo}
+            onChange={(e) => setSelectedPickupRefNo(e.target.value)}
+            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5"
+          >
+            {pickups.map((item) => (
+              <option value={item.refNo}>{item.refNo}</option>
+            ))}
+          </select>
+        </div>
+        <Button type="submit" className="w-full">
           Track
-        </button>
+        </Button>
       </form>
 
       {response && (
