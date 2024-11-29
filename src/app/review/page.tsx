@@ -35,16 +35,16 @@ import { useRouter } from "next/navigation";
 import createPdfFromLabel from "@/lib/utils";
 
 const DataGrid = ({ title, body }: { title: string; body: ReactNode }) => (
-  <div className="rounded-lg shadow-md">
-    <Accordion type="single" collapsible>
-      <AccordionItem value="item-1">
-        <AccordionTrigger className="px-4 bg-gray-200 py-1 border-y-2 border-gray-300 font-semibold text-base">
-          {title}
-        </AccordionTrigger>
-        <AccordionContent className="gap-2 py-3 px-4">{body}</AccordionContent>
-      </AccordionItem>
-    </Accordion>
-  </div>
+  <Accordion type="single" collapsible>
+    <AccordionItem value="item-1">
+      <AccordionTrigger className="px-4 bg-gray-200 py-1 border-y-2 border-gray-300 font-semibold text-base">
+        {title}
+      </AccordionTrigger>
+      <AccordionContent className="gap-2 pt-6 pb-14 px-4 ">
+        {body}
+      </AccordionContent>
+    </AccordionItem>
+  </Accordion>
 );
 
 export default function Review() {
@@ -55,6 +55,7 @@ export default function Review() {
   const [ratingsResponse, setRatingsResponse] = React.useState<any>(null);
   const [label, setLabel] = useState("");
   const [loading, setIsLoading] = useState(false);
+  const [pickUpRate, setPickUpRate] = React.useState<any>(null);
 
   const { createAddressBookEntry } = useAddressBook();
   const { updateAddressBookEntry } = useUpdateAddressBook();
@@ -94,7 +95,6 @@ export default function Review() {
 
     if (response.ok) {
       setCurrentStep(2);
-      setIsLoading(false);
       const result = await response.json();
       return result;
     } else {
@@ -119,7 +119,6 @@ export default function Review() {
 
       if (response.ok) {
         setCurrentStep(3);
-        setIsLoading(false);
         const data = await response.json();
         return data;
       } else {
@@ -131,6 +130,34 @@ export default function Review() {
       setIsLoading(false);
       console.log(error);
       alert("An error occurred while fetching ratings");
+    }
+  };
+
+  const handlePickupRate = async (payload: any) => {
+    try {
+      const response = await fetch("/api/pickup", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          payload: payload,
+        }),
+      });
+
+      if (response.ok) {
+        setCurrentStep(4);
+        const data = await response.json();
+        return data;
+      } else {
+        const errorData = await response.json();
+        console.error("Error in Pickup:", errorData);
+        alert("An error occurred while creating the pickup");
+      }
+    } catch (error) {
+      setIsLoading(false);
+      console.log(error);
+      alert("An error occurred while creating the pickup");
     }
   };
 
@@ -201,7 +228,16 @@ export default function Review() {
       const ratingData = await handleRatings(shipmentData);
       setRatingsResponse(ratingData);
       toast.success("Ratings fetched successfully");
+      if (
+        ratingData?.RateResponse.Response?.ResponseStatus?.Description ===
+        "Success"
+      ) {
+        const pickUpRateData = await handlePickupRate(shipmentData);
+        setPickUpRate(pickUpRateData?.PickupRateResponse);
+      }
     }
+
+    setIsLoading(false);
   };
 
   const createShipment = async (payload: any) => {
@@ -270,7 +306,6 @@ export default function Review() {
   const handleCreateShipment = async () => {
     try {
       const data = await createShipment(shipmentData);
-      console.log("Shipment response", data);
     } catch (error) {
       console.error("Error creating shipment:", error);
       alert("An error occurred while creating the shipment");
@@ -279,10 +314,7 @@ export default function Review() {
 
   const handleCreateMultiPieceShipment = async () => {
     try {
-      console.log(shipmentData);
-
       const data = await createMultiPieceShipment(shipmentData);
-      console.log("Shipment response", data);
     } catch (error) {
       console.error("Error creating shipment:", error);
       alert("An error occurred while creating the shipment");
@@ -305,11 +337,28 @@ export default function Review() {
     URL.revokeObjectURL(pdfUrl); // Clean up the object URL
   };
 
+  const handleCopy = () => {
+    const referenceNumber =
+      pickUpRate?.Response?.TransactionReference?.TransactionIdentifier;
+
+    if (referenceNumber) {
+      navigator.clipboard
+        .writeText(referenceNumber)
+        .then(() => {
+          toast.success("Reference number copied to clipboard");
+        })
+        .catch((err) => {
+          toast.error("Failed to copy reference number");
+          console.error("Failed to copy:", err);
+        });
+    }
+  };
+
   return (
     <>
       <Navbar />
-      <div className="p-3 lg:p-6 flex flex-col gap-8 bg-white min-h-[calc(100dvh-64px)] h-full">
-        <h1 className="text-3xl font-bold">
+      <div className="p-3 lg:p-6 flex flex-col bg-white min-h-[calc(100dvh-64px)] h-full">
+        <h1 className="text-3xl font-bold mb-8">
           <span className="border-b-2 border-yellow-400 pb-2">Create</span> a
           Shipment
         </h1>
@@ -372,16 +421,15 @@ export default function Review() {
           </>
         )}
         {currentStep < 3 ? (
-          <div className="flex gap-4 px-10">
+          <div className="flex gap-4 px-10 mt-8">
             <Button
               onClick={() => {
                 handleSubmit();
               }}
               className="bg-c-orange hover:bg-c-orange rounded-full px-4 text-gray-800"
-              disabled={loading}
             >
               {loading ? (
-                <LoaderCircle className="animate-spin text-white" />
+                <LoaderCircle className="animate-spin text-gray-800" />
               ) : (
                 "Create & Get Label(s)"
               )}
@@ -396,12 +444,17 @@ export default function Review() {
             </Link>
           </div>
         ) : (
-          <div className="flex gap-4">
+          <div className="flex gap-4 px-10 mt-8">
             <div className="bg-c-orange px-2 items-center text-white border flex gap-2 border-black rounded-md max-w-fit">
               <p className="text-[14px] lg:text-[24px] font-bold">Rates:</p>
               <h1 className="text-[20px]">
-                {ratingsResponse?.RateResponse?.RatedShipment?.TotalCharges
-                  ?.MonetaryValue || 0}
+                {(
+                  parseFloat(
+                    ratingsResponse?.RateResponse?.RatedShipment?.TotalCharges
+                      ?.MonetaryValue || 0
+                  ) +
+                  parseFloat(pickUpRate?.RateResult?.GrandTotalOfAllCharge || 0)
+                ).toFixed(2)}{" "}
               </h1>
             </div>
             <Button
@@ -422,8 +475,30 @@ export default function Review() {
           </div>
         )}
 
+        {pickUpRate?.Response && (
+          <h1 className="mt-4 font-semibold">
+            Pick Up Rate Reference Number:{" "}
+            <span
+              onClick={handleCopy}
+              className="text-gray-600 cursor-pointer border-b border-dotted hover:text-blue-600"
+              title="Click to copy"
+            >
+              {
+                pickUpRate?.Response?.TransactionReference
+                  ?.TransactionIdentifier
+              }
+            </span>
+          </h1>
+        )}
+
         <ProgressBar
-          steps={["Review", "Address Validation", "Ratings", "Shipment Label"]}
+          steps={[
+            "Review",
+            "Address Validation",
+            "Ratings",
+            "Pickup Rate",
+            "Shipment Label",
+          ]}
           currentStep={currentStep}
         />
 
@@ -454,13 +529,13 @@ const ShipFromAndToBody = ({
 }) => {
   return (
     <div className="w-1/2 relative">
-      <div className="w-3/4">
+      <div className="w-3/4 text-gray-600">
         {Object.entries(data).map(([_, value], index) => {
           const hasValue = typeof value === "string" ? !!value.trim() : !!value;
           const isLastValue = index === Object.keys(data).length - 1;
           if (hasValue) {
             return (
-              <span key={index} className="mr-2 leading-8 font-semibold">
+              <span key={index} className="mr-1">
                 {value?.toString() + (!isLastValue ? "," : "")}{" "}
               </span>
             );
@@ -655,7 +730,7 @@ const PaymentInfoBody = ({
 
 const TermsAndConditions = () => {
   return (
-    <div className="w-full">
+    <div className="w-full mt-8">
       <h2 className="text-lg font-semibold text-gray-700 mb-2  border-b border-b-amber-300">
         Terms and Conditions
       </h2>
