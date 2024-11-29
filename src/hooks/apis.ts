@@ -222,6 +222,9 @@ export const useUpdatePickupLocation = () => {
         profileId: localStorage.getItem("selectedShipmentProfileId"),
       };
 
+      console.log(selectedAddress, "selectedAddress22oooooooooooooooooo");
+      
+
       const response = await axios.patch(
         `/api/address-book/pickup-location/${selectedAddress}`,
         addressData,

@@ -133,6 +133,26 @@ export default function Review() {
     }
   };
 
+  const handleCreatePickup = async (ref: string) => {
+    try {
+      const payload = {
+        refNo: ref,
+        pickUpLocationId: shipmentData.pickUpLocation.selectedAddress,
+      };
+      await fetch("/api/pickup/store", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      });
+    } catch (error) {
+      setIsLoading(false);
+      console.log(error);
+      alert("An error occurred while creating the pickup");
+    }
+  };
+
   const handlePickupRate = async (payload: any) => {
     try {
       const response = await fetch("/api/pickup", {
@@ -148,6 +168,10 @@ export default function Review() {
       if (response.ok) {
         setCurrentStep(4);
         const data = await response.json();
+        handleCreatePickup(
+          data?.PickupRateResponse?.Response?.TransactionReference
+            ?.TransactionIdentifier
+        );
         return data;
       } else {
         const errorData = await response.json();
@@ -182,6 +206,7 @@ export default function Review() {
       );
     }
     // Add or Update pickup location
+
     if (shipmentData.pickUpLocation.add) {
       await createPickupLocation(shipmentData.pickUpLocation);
     } else {

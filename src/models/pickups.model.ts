@@ -9,7 +9,7 @@ export const pickupsSchema = new mongoose.Schema(
     pickUpLocationId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "PickupLocation",
-      required: true,
+      required: false,
     },
   },
   { timestamps: true }

@@ -7,9 +7,10 @@ export async function POST(req: NextRequest) {
     transId,
     transactionSrc,
     locale = "en_US",
-    returnSignature = "false",
-    returnMilestones = "false",
-    returnPOD = "false",
+    referenceNumber,
+    fromPickUpDate,
+    toPickUpDate,
+    refNumType,
   } = await req.json();
 
   if (!inquiryNumber || inquiryNumber.length < 7 || inquiryNumber.length > 34) {
@@ -35,8 +36,8 @@ export async function POST(req: NextRequest) {
   const version = "v1";
   const token = req.cookies.get("access_token")?.value;
 
-  const apiUrl = `${process.env.BASE_URL}/api/track/${version}/details/${inquiryNumber}?locale=${locale}&returnSignature=${returnSignature}&returnMilestones=${returnMilestones}&returnPOD=${returnPOD}`;
-
+  const apiUrl = new URL(`${process.env.BASE_URL}/api/track/${version}/reference/details/${referenceNumber}?locale=${locale}&fromPickUpDate=${fromPickUpDate}&toPickUpDate=${toPickUpDate}&refNumType=${refNumType}`);
+  
   try {
     const response = await fetch(apiUrl, {
       method: "GET",
@@ -49,7 +50,7 @@ export async function POST(req: NextRequest) {
     });
 
     if (response.status === 200) {
-      const data = await response.json();
+      const data = await response.text();
       return NextResponse.json(data, { status: 200 });
     } else if (response.status === 400) {
       const errorData = await response.json();
