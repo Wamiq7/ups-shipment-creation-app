@@ -3,7 +3,7 @@
 import Navbar from "@/components/Navbar";
 import ProgressBar from "@/components/ProgressBar";
 import { Button } from "@/components/ui/button";
-import { CheckIcon, Cross1Icon, InfoCircledIcon, OpenInNewWindowIcon } from "@radix-ui/react-icons";
+import { InfoCircledIcon, OpenInNewWindowIcon } from "@radix-ui/react-icons";
 import {
   useAddressBook,
   useCreatePackageShipment,
@@ -26,25 +26,22 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import { IDataState, IShipmentFrom, PackageShipmentDetails } from "@/types/data.type";
+import {
+  IDataState,
+  IShipmentFrom,
+  PackageShipmentDetails,
+} from "@/types/data.type";
 import { useRouter } from "next/navigation";
+import createPdfFromLabel from "@/lib/utils";
 
-const DataGrid = ({
-  title,
-  body,
-}: {
-  title: string;
-  body: ReactNode;
-}) => (
+const DataGrid = ({ title, body }: { title: string; body: ReactNode }) => (
   <div className="rounded-lg shadow-md">
     <Accordion type="single" collapsible>
       <AccordionItem value="item-1">
         <AccordionTrigger className="px-4 bg-gray-200 py-1 border-y-2 border-gray-300 font-semibold text-base">
           {title}
         </AccordionTrigger>
-        <AccordionContent className="gap-2 py-3 px-4">
-          {body}
-        </AccordionContent>
+        <AccordionContent className="gap-2 py-3 px-4">{body}</AccordionContent>
       </AccordionItem>
     </Accordion>
   </div>
@@ -198,7 +195,9 @@ export default function Review() {
 
     // UPS Apis
     const data = await handleAddress(shipmentData);
-    if (data?.XAVResponse?.Response?.ResponseStatus?.Description === "Success") {
+    if (
+      data?.XAVResponse?.Response?.ResponseStatus?.Description === "Success"
+    ) {
       const ratingData = await handleRatings(shipmentData);
       setRatingsResponse(ratingData);
       toast.success("Ratings fetched successfully");
@@ -238,11 +237,14 @@ export default function Review() {
   const createMultiPieceShipment = async (payload: any) => {
     try {
       setIsLoading(true);
-      const response = await fetch("/api/create-shipment/multi-piece-shipping", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ payload }),
-      });
+      const response = await fetch(
+        "/api/create-shipment/multi-piece-shipping",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ payload }),
+        }
+      );
 
       const result = await response.json();
 
@@ -292,12 +294,24 @@ export default function Review() {
     router.push(`/?edit=${section}`);
   };
 
+  const handleDownload = async () => {
+    const pdfBlob = await createPdfFromLabel(label);
+    const pdfUrl = URL.createObjectURL(pdfBlob);
+
+    const link = document.createElement("a");
+    link.href = pdfUrl;
+    link.download = "shipment_label.pdf"; // Specify the download file name
+    link.click();
+    URL.revokeObjectURL(pdfUrl); // Clean up the object URL
+  };
+
   return (
     <>
       <Navbar />
-      <div className="p-3 lg:p-6 flex flex-col gap-8 bg-white">
+      <div className="p-3 lg:p-6 flex flex-col gap-8 bg-white min-h-[calc(100dvh-64px)] h-full">
         <h1 className="text-3xl font-bold">
-          <span className="border-b-2 border-yellow-400 pb-2">Create</span> a Shipment
+          <span className="border-b-2 border-yellow-400 pb-2">Create</span> a
+          Shipment
         </h1>
         {shipmentData && (
           <>
@@ -382,7 +396,7 @@ export default function Review() {
             </Link>
           </div>
         ) : (
-          <div className="flex gap-4 justify-center">
+          <div className="flex gap-4">
             <div className="bg-c-orange px-2 items-center text-white border flex gap-2 border-black rounded-md max-w-fit">
               <p className="text-[14px] lg:text-[24px] font-bold">Rates:</p>
               <h1 className="text-[20px]">
@@ -397,6 +411,7 @@ export default function Review() {
                   : handleCreateShipment();
               }}
               disabled={loading}
+              className="bg-c-orange hover:bg-c-orange rounded-full px-4 text-gray-800"
             >
               {loading ? (
                 <LoaderCircle className="animate-spin text-white" />
@@ -416,9 +431,13 @@ export default function Review() {
           <div>
             <h1 className="text-2xl font-semibold mb-4">Shipment Label</h1>
             <img src={label} alt="Shipping Label" className="mb-4" />
-            <a href={label} download="label.gif">
-              <Button variant={"default"}>Download Label</Button>
-            </a>
+            <Button
+              variant={"default"}
+              onClick={handleDownload}
+              className="bg-c-orange hover:bg-c-orange rounded-full px-4 text-gray-800"
+            >
+              Download as PDF
+            </Button>
           </div>
         )}
       </div>
@@ -437,15 +456,11 @@ const ShipFromAndToBody = ({
     <div className="w-1/2 relative">
       <div className="w-3/4">
         {Object.entries(data).map(([_, value], index) => {
-          const hasValue =
-            typeof value === "string" ? !!value.trim() : !!value;
+          const hasValue = typeof value === "string" ? !!value.trim() : !!value;
           const isLastValue = index === Object.keys(data).length - 1;
           if (hasValue) {
             return (
-              <span
-                key={index}
-                className="mr-2 leading-8 font-semibold"
-              >
+              <span key={index} className="mr-2 leading-8 font-semibold">
                 {value?.toString() + (!isLastValue ? "," : "")}{" "}
               </span>
             );
@@ -470,9 +485,7 @@ const PackageInformationBody = ({
   return (
     <div className="w-1/2 relative">
       <div className="w-3/4">
-        <p className="font-semibold">
-          Total Packages: {data.packages.length}
-        </p>
+        <p className="font-semibold">Total Packages: {data.packages.length}</p>
 
         <hr className="my-3" />
         <div className="ml-12 space-y-4">
@@ -481,21 +494,22 @@ const PackageInformationBody = ({
               return (
                 <li key={index} className="font-semibold">
                   {data.description} - {pkg.packageWeight} lbs -{" "}
-                  {pkg.dimensions.packageHeight} x {pkg.dimensions.packageLength} x{" "}
-                  {pkg.dimensions.packageWidth} in
+                  {pkg.dimensions.packageHeight} x{" "}
+                  {pkg.dimensions.packageLength} x {pkg.dimensions.packageWidth}{" "}
+                  in
                 </li>
               );
             })}
           </ul>
           <button
             className="text-c-blue-accent italic text-xs hover:underline"
-          // onClick={handleAddPackage}
+            // onClick={handleAddPackage}
           >
             + Add another Package
           </button>
         </div>
 
-        <div className="flex mt-5">
+        <div className="flex mt-5 gap-2 items-center">
           <Button size={"sm"} variant={"outline"}>
             Previous
           </Button>
@@ -519,11 +533,7 @@ const ShippingServiceBody = ({
   data: IDataState;
   onEdit: () => void;
 }) => {
-  const {
-    pickUpLocation,
-    packageShipmentDetails,
-    pickUpDetails,
-  } = data;
+  const { pickUpLocation, packageShipmentDetails, pickUpDetails } = data;
 
   return (
     <div className="w-full space-y-3">
@@ -537,12 +547,14 @@ const ShippingServiceBody = ({
         </div>
         <p className="mt-1 text-gray-600">YES pick up my shipment.</p>
         <p className="text-gray-600">
-          {pickUpLocation.shipFromName} is a "Daily Pickup" Account. Your pickups occur once each business day.
+          {pickUpLocation.shipFromName} is a "Daily Pickup" Account. Your
+          pickups occur once each business day.
         </p>
         <p className="text-gray-600 font-medium">Pickup Location:</p>
         <p className="text-gray-600">{pickUpLocation.shipFromName}</p>
         <p className="text-gray-600">
-          {pickUpLocation.shipFromAddressLine}, {pickUpLocation.shipFromCity}, {pickUpLocation.shipFromState} {pickUpLocation.shipFromPostalCode}
+          {pickUpLocation.shipFromAddressLine}, {pickUpLocation.shipFromCity},{" "}
+          {pickUpLocation.shipFromState} {pickUpLocation.shipFromPostalCode}
         </p>
         <p className="text-gray-600">{pickUpLocation.shipFromCountry}</p>
       </div>
@@ -568,17 +580,21 @@ const ShippingServiceBody = ({
           <EditButton onEdit={onEdit} />
         </div>
         <p className="mt-1 text-gray-600">
-          {new Date(packageShipmentDetails.shipDate).toLocaleDateString("en-US", {
-            weekday: "long",
-            month: "long",
-            day: "numeric",
-            year: "numeric",
-          })}{" "}
+          {new Date(packageShipmentDetails.shipDate).toLocaleDateString(
+            "en-US",
+            {
+              weekday: "long",
+              month: "long",
+              day: "numeric",
+              year: "numeric",
+            }
+          )}{" "}
           by End of Day via our UPS Ground service for $15.08.
         </p>
         <p className="text-gray-600 text-sm bg-gray-200 p-2 !my-3">
-          Please note that extremely high volume on November 18, 2024 - January 10, 2025 may add
-          one day in transit for a small number of Ground shipments. See if you may be affected:{" "}
+          Please note that extremely high volume on November 18, 2024 - January
+          10, 2025 may add one day in transit for a small number of Ground
+          shipments. See if you may be affected:{" "}
           <a
             href="https://www.ups.com/servicealerts"
             target="_blank"
@@ -589,10 +605,12 @@ const ShippingServiceBody = ({
           </a>
         </p>
         <p className="text-gray-500 text-xs mt-2">
-          * Note: Confirm packages can be received at this address during regular hours.
+          * Note: Confirm packages can be received at this address during
+          regular hours.
         </p>
         <p className="text-gray-500 text-xs">
-          Above delivery dates/times are estimated, but not necessarily guaranteed. Refer to{" "}
+          Above delivery dates/times are estimated, but not necessarily
+          guaranteed. Refer to{" "}
           <a
             href="https://www.ups.com/guarantees"
             target="_blank"
@@ -608,11 +626,7 @@ const ShippingServiceBody = ({
   );
 };
 
-const AdditionalOptionsBody = ({
-  onEdit,
-}: {
-  onEdit: () => void;
-}) => {
+const AdditionalOptionsBody = ({ onEdit }: { onEdit: () => void }) => {
   return (
     <div className="w-full flex justify-between items-center">
       <p className="font-semibold">None Selected</p>
@@ -631,7 +645,8 @@ const PaymentInfoBody = ({
   return (
     <div className="w-full flex justify-between items-center">
       <p className="font-semibold">
-        Bill Shipping Charges To: Shipper - {shipmentDetails.senderTaxId} - {shipmentDetails.senderName}
+        Bill Shipping Charges To: Shipper - {shipmentDetails.senderTaxId} -{" "}
+        {shipmentDetails.senderName}
       </p>
       <EditButton onEdit={onEdit} />
     </div>
@@ -641,11 +656,13 @@ const PaymentInfoBody = ({
 const TermsAndConditions = () => {
   return (
     <div className="w-full">
-      <h2 className="text-lg font-semibold text-gray-700 mb-2  border-b border-b-amber-300">Terms and Conditions</h2>
+      <h2 className="text-lg font-semibold text-gray-700 mb-2  border-b border-b-amber-300">
+        Terms and Conditions
+      </h2>
       <div className="ml-12">
-
         <p className="text-gray-600 text-sm flex items-center gap-2">
-          Creating this shipment affirms that you have agreed to the UPS Tariff / Terms and Conditions of Service. View and download:{" "}
+          Creating this shipment affirms that you have agreed to the UPS Tariff
+          / Terms and Conditions of Service. View and download:{" "}
           <a
             href="https://www.ups.com/terms"
             target="_blank"
@@ -657,7 +674,8 @@ const TermsAndConditions = () => {
           </a>{" "}
         </p>
         <p className="text-gray-600 text-sm mt-2 flex items-center gap-2">
-          You agree not to ship any items prohibited by UPS, or any UPS-regulated items except by express written contract with UPS.{" "}
+          You agree not to ship any items prohibited by UPS, or any
+          UPS-regulated items except by express written contract with UPS.{" "}
           <a
             href="https://www.ups.com/prohibited-items"
             target="_blank"

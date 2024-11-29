@@ -11,8 +11,6 @@ export async function POST(req: NextRequest) {
       payload,
     } = await req.json();
 
-
-
     // Construct the shipment payload for the UPS API
     const shipmentPayload = {
       ShipmentRequest: {
@@ -54,9 +52,9 @@ export async function POST(req: NextRequest) {
             TaxIdentificationNumber: "", // TaxIdentificationNumber
             Phone: {
               Number: payload.to.receiverPhone,
-              Extension: '' // Extension
+              Extension: "", // Extension
             },
-            FaxNumber: '', // FaxNumber
+            FaxNumber: "", // FaxNumber
             EMailAddress: payload.to.email, // EMailAddress
             Address: {
               AddressLine: [payload.to.receiverAddressLine?.toString()],
@@ -64,7 +62,7 @@ export async function POST(req: NextRequest) {
               StateProvinceCode: payload.to.receiverState,
               PostalCode: payload.to.receiverPostalCode,
               CountryCode: payload.to.receiverCountry,
-              ResidentialAddressIndicator: "Y" // ResidentialAddressIndicator
+              ResidentialAddressIndicator: "Y", // ResidentialAddressIndicator
             },
             // Residential: " ",
           },
@@ -76,7 +74,7 @@ export async function POST(req: NextRequest) {
             EMailAddress: payload.pickUpLocation.email, // EMailAddress
             Phone: {
               Number: payload.pickUpLocation.shipFromPhone,
-              Extension: '' // Extension
+              Extension: "", // Extension
             },
             FaxNumber: payload.pickUpLocation.shipFromFax,
             Address: {
@@ -105,14 +103,14 @@ export async function POST(req: NextRequest) {
         },
         LabelSpecification: {
           LabelImageFormat: {
-            Code: "ZPL",
+            Code: "GIF",
             Description: "desc",
           },
           HTTPUserAgent: "Mozilla/4.5",
           LabelStockSize: {
             Height: "6",
-            Width: "4"
-          }
+            Width: "4",
+          },
         },
       },
     };
@@ -166,31 +164,28 @@ export async function POST(req: NextRequest) {
   }
 }
 
-
 const getPackagesArray = (payload: any) => {
   return payload.packageShipmentDetails?.packages.map((pkg: any) => ({
-
     Description: payload.packageShipmentDetails.description,
     Packaging: {
       Code: payload.packageShipmentDetails.packageType,
-      Description: payload.packageShipmentDetails.packageDescription
+      Description: payload.packageShipmentDetails.packageDescription,
     },
     Dimensions: {
       UnitOfMeasurement: {
         Code: "IN",
-        Description: "Inches"
+        Description: "Inches",
       },
       Length: pkg.dimensions.packageLength,
       Width: pkg.dimensions.packageWidth,
-      Height: pkg.dimensions.packageHeight
+      Height: pkg.dimensions.packageHeight,
     },
     PackageWeight: {
       UnitOfMeasurement: {
         Code: "LBS",
-        Description: "Pounds"
+        Description: "Pounds",
       },
-      Weight: pkg.packageWeight
-    }
-  }))
-
-}
+      Weight: pkg.packageWeight,
+    },
+  }));
+};

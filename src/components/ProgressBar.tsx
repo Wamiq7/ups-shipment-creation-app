@@ -15,13 +15,12 @@ export default function ProgressBar({ currentStep, steps }: ProgressBarProps) {
         {steps.map((_, index) => {
           const isActive = index + 1 <= currentStep; // Step is completed or current
           const isLast = index === stepCount - 1; // Last step has no connector
-          const connectorWidth = `${100 / (stepCount - 1)}%`;
 
           return (
             <React.Fragment key={index}>
               <div className="flex-1">
                 <div
-                  className={`w-10 h-10 mx-auto rounded-full text-lg flex items-center justify-center ${
+                  className={`size-7 mx-auto rounded-full text-sm flex items-center justify-center ${
                     isActive
                       ? "bg-green-500 text-white"
                       : "bg-white border-2 border-gray-500 text-gray-500"
@@ -39,7 +38,6 @@ export default function ProgressBar({ currentStep, steps }: ProgressBarProps) {
                       className={`text-xs leading-none py-1 text-center rounded ${
                         index + 1 < currentStep ? "bg-green-400" : "bg-gray-500"
                       }`}
-                      //   style={{ width: connectorWidth }}
                     ></div>
                   </div>
                 </div>

@@ -98,16 +98,22 @@ export async function POST(req: NextRequest) {
                 Code: "IN",
                 Description: "Inches",
               },
-              Length: payload.packageShipmentDetails.packageLength,
-              Width: payload.packageShipmentDetails.packageWidth,
-              Height: payload.packageShipmentDetails.packageHeight,
+              Length:
+                payload.packageShipmentDetails.packages[0].dimensions
+                  .packageLength,
+              Width:
+                payload.packageShipmentDetails.packages[0].dimensions
+                  .packageWidth,
+              Height:
+                payload.packageShipmentDetails.packages[0].dimensions
+                  .packageHeight,
             },
             PackageWeight: {
               UnitOfMeasurement: {
                 Code: "LBS",
                 Description: "Pounds",
               },
-              Weight: payload.packageShipmentDetails.packageWeight,
+              Weight: payload.packageShipmentDetails.packages[0].packageWeight,
             },
           },
         },
