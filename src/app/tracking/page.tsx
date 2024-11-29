@@ -1,9 +1,16 @@
 "use client";
 
-import React, { useState } from "react";
+export interface IPickup {
+  _id: string;
+  refNo: string;
+  pickUpLocationId: string;
+}
+
+import React, { useCallback, useEffect, useState } from "react";
 
 export default function Tracking() {
   const [inquiryNumber, setInquiryNumber] = useState("dki9339k");
+  const [pickups, setPickups] = useState<IPickup[]>([]);
   const [transId, setTransId] = useState(
     "HDBGJqCPsGUEfpTwHpJPfEUGd0a1CfWiGKyYy6wqKNbydtnv"
   );
@@ -11,6 +18,24 @@ export default function Tracking() {
     "pfecjSUu1pYAQ32AV9sh3WVkPBOyVjYKXCz5zjymmO8cDMQa6HLbY4etlAoRFglG"
   );
   const [response, setResponse] = useState(null);
+
+  useEffect(() => {
+    getPickups();
+  }, []);
+
+  const getPickups = useCallback(async () => {
+    try {
+      const res = await fetch("/api/pickup/store", {
+        method: "GET",
+        headers: { "Content-Type": "application/json" },
+      });
+
+      const data: { pickups: IPickup[] } = await res.json();
+      setPickups(data.pickups);
+    } catch (error) {
+      console.error("Error getting pickups:", error);
+    }
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
