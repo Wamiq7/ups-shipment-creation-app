@@ -161,6 +161,31 @@ export default function Review() {
     }
   };
 
+  const handlePickupRef = async (payload: any) => {
+    try {
+      const response = await fetch("/api/pickup/store", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          refNo: payload.refNo,
+          pickUpLocationId: payload.pickUpLocationId,
+        }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        return data;
+      } else {
+        const errorData = await response.json();
+        console.error("Error in Pickup:", errorData);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   const handleSubmit = async () => {
     setIsLoading(true);
     // Add or Update From
@@ -234,6 +259,18 @@ export default function Review() {
       ) {
         const pickUpRateData = await handlePickupRate(shipmentData);
         setPickUpRate(pickUpRateData?.PickupRateResponse);
+
+        if (pickUpRateData) {
+          console.log("first", shipmentData?.pickUpLocation);
+          console.log("2nd", pickUpRateData?.PickupRateResponse);
+          const pickUpRef = await handlePickupRef({
+            refNo:
+              pickUpRateData?.PickupRateResponse?.Response?.TransactionReference
+                ?.TransactionIdentifier,
+            pickUpLocationId: shipmentData?.pickUpLocation?.selectedAddress,
+          });
+          console.log({ pickUpRef });
+        }
       }
     }
 
