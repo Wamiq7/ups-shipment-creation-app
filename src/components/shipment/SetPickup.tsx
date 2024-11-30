@@ -33,6 +33,19 @@ export default function SetPickup() {
     { value: "system", label: "System" },
   ];
 
+  const countryCodes = [
+    { value: "US", label: "United States" },
+    { value: "CA", label: "Canada" },
+    { value: "GB", label: "United Kingdom" },
+    { value: "AU", label: "Australia" },
+    { value: "IN", label: "India" },
+    { value: "DE", label: "Germany" },
+    { value: "FR", label: "France" },
+    { value: "IT", label: "Italy" },
+    { value: "ES", label: "Spain" },
+    { value: "MX", label: "Mexico" },
+  ];
+
   const getPickupLocations = async () => {
     try {
       const config = {
@@ -154,7 +167,7 @@ export default function SetPickup() {
                   <div className="grid w-full max-w-sm items-center gap-1.5">
                     <Label>Country or Territory *</Label>{" "}
                     <BasicSelect
-                      options={themeOptions}
+                      options={countryCodes}
                       placeholder="Country or Territory"
                       value={shipmentData.pickUpLocation.shipFromCountry}
                       onChange={(value) => {

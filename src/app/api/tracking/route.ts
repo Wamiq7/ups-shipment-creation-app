@@ -4,8 +4,6 @@ export async function POST(req: NextRequest) {
   // Extract shipment details from the request body
   const {
     inquiryNumber,
-    transId,
-    transactionSrc,
     locale = "en_US",
     returnSignature = "false",
     returnMilestones = "false",
@@ -20,18 +18,7 @@ export async function POST(req: NextRequest) {
       { status: 400 }
     );
   }
-  if (!transId) {
-    return NextResponse.json(
-      { message: "Missing required transId in headers." },
-      { status: 400 }
-    );
-  }
-  if (!transactionSrc) {
-    return NextResponse.json(
-      { message: "Missing required transactionSrc in headers." },
-      { status: 400 }
-    );
-  }
+
   const version = "v1";
   const token = req.cookies.get("access_token")?.value;
 
@@ -42,8 +29,8 @@ export async function POST(req: NextRequest) {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
-        transId: transId,
-        transactionSrc: transactionSrc,
+        transId: "testing",
+        transactionSrc: "HDBGJqCPsGUEfpTwHpJPfEUGd0a1CfWiGKyYy6wqKNbydtnv",
         Authorization: `Bearer ${token}`,
       },
     });

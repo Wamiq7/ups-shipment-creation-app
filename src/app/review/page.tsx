@@ -261,15 +261,12 @@ export default function Review() {
         setPickUpRate(pickUpRateData?.PickupRateResponse);
 
         if (pickUpRateData) {
-          console.log("first", shipmentData?.pickUpLocation);
-          console.log("2nd", pickUpRateData?.PickupRateResponse);
-          const pickUpRef = await handlePickupRef({
+          await handlePickupRef({
             refNo:
               pickUpRateData?.PickupRateResponse?.Response?.TransactionReference
                 ?.TransactionIdentifier,
             pickUpLocationId: shipmentData?.pickUpLocation?.selectedAddress,
           });
-          console.log({ pickUpRef });
         }
       }
     }
@@ -602,16 +599,13 @@ const PackageInformationBody = ({
         <hr className="my-3" />
         <div className="ml-12 space-y-4">
           <ul className="ml-4 list-decimal">
-            {data.packages.map((pkg, index) => {
-              return (
-                <li key={index} className="font-semibold">
-                  {data.description} - {pkg.packageWeight} lbs -{" "}
-                  {pkg.dimensions.packageHeight} x{" "}
-                  {pkg.dimensions.packageLength} x {pkg.dimensions.packageWidth}{" "}
-                  in
-                </li>
-              );
-            })}
+            {data.packages.map((pkg, index) => (
+              <li key={index} className="font-semibold">
+                {data.description} - {pkg.packageWeight} lbs -{" "}
+                {pkg.dimensions.packageHeight} x {pkg.dimensions.packageLength}{" "}
+                x {pkg.dimensions.packageWidth} in
+              </li>
+            ))}
           </ul>
           <button
             className="text-c-blue-accent italic text-xs hover:underline"

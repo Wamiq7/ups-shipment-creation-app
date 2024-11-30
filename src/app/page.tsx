@@ -96,7 +96,6 @@ export default function Home() {
   return (
     <>
       <Navbar />
-      {/* <Toaster position="top-right" richColors /> */}
       <div className="px-3 lg:px-6 py-4 flex flex-col gap-3 lg:gap-4">
         <ShipmentProfile />
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
@@ -104,20 +103,22 @@ export default function Home() {
             {/* Ship From Section */}
             <div
               ref={fromRef}
-              className={`transition-all duration-500 ${highlightedSection === "from"
-                ? "ring-4 ring-amber-400 animate-pulse rounded-xl"
-                : ""
-                }`}
+              className={`transition-all duration-500 ${
+                highlightedSection === "from"
+                  ? "ring-4 ring-amber-400 animate-pulse rounded-xl"
+                  : ""
+              }`}
             >
               <From />
             </div>
             {/* Ship To Section */}
             <div
               ref={toRef}
-              className={`transition-all duration-500 ${highlightedSection === "to"
-                ? "ring-4 ring-amber-400 animate-pulse rounded-xl"
-                : ""
-                }`}
+              className={`transition-all duration-500 ${
+                highlightedSection === "to"
+                  ? "ring-4 ring-amber-400 animate-pulse rounded-xl"
+                  : ""
+              }`}
             >
               <To />
             </div>
@@ -126,20 +127,22 @@ export default function Home() {
             {/* Package Information Section */}
             <div
               ref={packageRef}
-              className={`transition-all duration-500 ${highlightedSection === "package"
-                ? "ring-4 ring-amber-400 animate-pulse rounded-xl"
-                : ""
-                }`}
+              className={`transition-all duration-500 ${
+                highlightedSection === "package"
+                  ? "ring-4 ring-amber-400 animate-pulse rounded-xl"
+                  : ""
+              }`}
             >
               <PackageShipmentDetails />
             </div>
             {/* Shipping Service Section */}
             <div
               ref={shippingServiceRef}
-              className={`transition-all duration-500 ${highlightedSection === "shippingService"
-                ? "ring-4 ring-amber-400 animate-pulse rounded-xl"
-                : ""
-                }`}
+              className={`transition-all duration-500 ${
+                highlightedSection === "shippingService"
+                  ? "ring-4 ring-amber-400 animate-pulse rounded-xl"
+                  : ""
+              }`}
             >
               <SetPickup />
             </div>
@@ -148,20 +151,22 @@ export default function Home() {
             {/* Additional Options Section */}
             <div
               ref={additionalOptionsRef}
-              className={`transition-all duration-500 ${highlightedSection === "additionalOptions"
-                ? "ring-4 ring-amber-400 animate-pulse rounded-xl"
-                : ""
-                }`}
+              className={`transition-all duration-500 ${
+                highlightedSection === "additionalOptions"
+                  ? "ring-4 ring-amber-400 animate-pulse rounded-xl"
+                  : ""
+              }`}
             >
               <OtherOptionRate />
             </div>
             {/* Payments Section */}
             <div
               ref={paymentsRef}
-              className={`transition-all duration-500 ${highlightedSection === "payments"
-                ? "ring-4 ring-amber-400 animate-pulse rounded-xl"
-                : ""
-                }`}
+              className={`transition-all duration-500 ${
+                highlightedSection === "payments"
+                  ? "ring-4 ring-amber-400 animate-pulse rounded-xl"
+                  : ""
+              }`}
             >
               <div className="space-y-4 mt-5">
                 <div className="flex items-center space-x-2">

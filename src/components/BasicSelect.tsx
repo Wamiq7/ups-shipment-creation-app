@@ -25,7 +25,7 @@ export default function BasicSelect({
   onChange,
 }: DynamicSelectProps) {
   return (
-    <Select value={value} onValueChange={onChange}>
+    <Select key={value} value={value} onValueChange={onChange}>
       <SelectTrigger className="w-full h-7 lg:h-9 text-xs lg:text-sm">
         <SelectValue placeholder={placeholder} />
       </SelectTrigger>
