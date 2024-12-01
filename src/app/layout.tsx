@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import localFont from "next/font/local";
 import StoreProvider from "@/redux/StoreProvider";
 import "./globals.css";
+import { Suspense } from "react";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -29,7 +30,9 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased bg-c-light-gray overflow-y-scroll`}
       >
-        <StoreProvider>{children}</StoreProvider>
+        <StoreProvider>
+          <Suspense>{children}</Suspense>
+        </StoreProvider>
       </body>
     </html>
   );
