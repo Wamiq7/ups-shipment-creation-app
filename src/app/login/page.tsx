@@ -47,7 +47,7 @@ export default function Login() {
         },
       });
       const data = await response.json();
-
+      router.push("/");
       // window.location.reload();
     } catch (error: any) {
       console.error("Error fetching token:", error?.message);
@@ -66,7 +66,6 @@ export default function Login() {
         localStorage.setItem("token", response.data.token);
 
         await getToken();
-        router.push("/");
       }
     } catch (err: any) {
       setError(err.response?.data?.message || "Failed to log in");
