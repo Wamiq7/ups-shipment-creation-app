@@ -5,10 +5,13 @@ import React, { useEffect, useState } from "react";
 import { Button } from "./ui/button";
 import { usePathname } from "next/navigation";
 import { LogOut } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { deleteCookie } from "@/app/actions";
 
 export default function Navbar() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const pathname = usePathname();
+  const router = useRouter();
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -17,10 +20,11 @@ export default function Navbar() {
     }
   }, []);
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
     localStorage.removeItem("token");
+    await deleteCookie();
     setIsLoggedIn(false);
-    window.location.reload();
+    router.push("/login");
   };
 
   const isActive = (path: string) => {
