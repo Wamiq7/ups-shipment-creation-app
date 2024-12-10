@@ -244,7 +244,6 @@ export default function Review() {
         shipmentData.packageShipmentDetails.packageDescription,
     };
     await createPackageShipment(pkgData);
-
     // UPS Apis
     const data = await handleAddress(shipmentData);
     if (
@@ -259,7 +258,6 @@ export default function Review() {
       ) {
         const pickUpRateData = await handlePickupRate(shipmentData);
         setPickUpRate(pickUpRateData?.PickupRateResponse);
-
         if (pickUpRateData) {
           await handlePickupRef({
             refNo:
@@ -270,7 +268,6 @@ export default function Review() {
         }
       }
     }
-
     setIsLoading(false);
   };
 

@@ -10,7 +10,7 @@ const initialState: IDataState = {
     senderAttention: "ShipperZs Attn Name",
     senderTaxId: "123456",
     senderPhone: "1115554758",
-    senderFax: "8002222222",
+    // senderFax: "8002222222",
     senderAddressLine: "2311 York Rd",
     senderCity: "Timonium",
     senderState: "MD",

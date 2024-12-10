@@ -3,7 +3,7 @@ export interface IShipmentFrom {
   senderAttention: string;
   senderTaxId: string;
   senderPhone: string;
-  senderFax: string;
+  // senderFax: string;
   senderAddressLine: string;
   senderCity: string;
   senderState: string;

@@ -21,8 +21,8 @@ export const useAddressBook = () => {
         zipCode: shipmentData.senderPostalCode,
         city: shipmentData.senderCity,
         state: shipmentData.senderState,
-        faxNumber: shipmentData.senderFax,
-        phoneNumber: shipmentData.senderFax,
+        email: shipmentData.email,
+        phoneNumber: shipmentData.senderPhone,
         country: shipmentData.senderCountry,
         profileId: localStorage.getItem("selectedShipmentProfileId"),
       };
@@ -62,8 +62,8 @@ export const useUpdateAddressBook = () => {
         zipCode: shipmentData.senderPostalCode,
         city: shipmentData.senderCity,
         state: shipmentData.senderState,
-        faxNumber: shipmentData.senderFax,
-        phoneNumber: shipmentData.senderFax,
+        email: shipmentData.email,
+        phoneNumber: shipmentData.senderPhone,
         country: shipmentData.senderCountry,
         profileId: localStorage.getItem("selectedShipmentProfileId"),
       };
@@ -101,6 +101,8 @@ export const useToAddressBook = () => {
         zipCode: shipmentData.receiverPostalCode,
         city: shipmentData.receiverCity,
         state: shipmentData.receiverState,
+        email: shipmentData.email,
+        phoneNumber: shipmentData.receiverPhone,
         countryCode: shipmentData.receiverCountry,
         profileId: localStorage.getItem("selectedShipmentProfileId"),
       };
@@ -138,6 +140,8 @@ export const useUpdateToAddressBook = () => {
         zipCode: shipmentData.receiverPostalCode,
         city: shipmentData.receiverCity,
         state: shipmentData.receiverState,
+        email: shipmentData.email,
+        phoneNumber: shipmentData.receiverPhone,
         countryCode: shipmentData.receiverCountry,
         profileId: localStorage.getItem("selectedShipmentProfileId"),
       };

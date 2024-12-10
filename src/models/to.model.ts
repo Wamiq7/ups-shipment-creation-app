@@ -26,6 +26,12 @@ export const toSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    email: {
+      type: String,
+    },
+    phoneNumber: {
+      type: String,
+    },
     countryCode: {
       type: String,
       required: true,

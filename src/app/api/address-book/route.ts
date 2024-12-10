@@ -16,7 +16,7 @@ export async function POST(request: Request) {
       zipCode: body.zipCode,
       city: body.city,
       state: body.state,
-      faxNumber: body.faxNumber,
+      email: body.email,
       phoneNumber: body.phoneNumber,
       country: body.country,
       profileId: body.profileId,

@@ -26,9 +26,8 @@ export const addressBookSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    faxNumber: {
+    email: {
       type: String,
-      required: true,
     },
     phoneNumber: {
       type: String,

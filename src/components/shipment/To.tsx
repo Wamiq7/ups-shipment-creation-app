@@ -220,6 +220,50 @@ export default function To() {
                     />
                   </div>
                 </div>
+                <div className="flex flex-col gap-2">
+                  <div className="grid w-full max-w-sm items-center gap-1.5">
+                    <Label htmlFor="email" className="text-xs">
+                      Email
+                    </Label>
+                    <Input
+                      type="email"
+                      name="email"
+                      value={shipmentData.email}
+                      onChange={(e) => {
+                        dispatch(
+                          updateDataState({
+                            path: ["to"],
+                            updates: {
+                              email: e.target.value,
+                            },
+                          })
+                        );
+                      }}
+                      placeholder="Enter email"
+                    />
+                  </div>
+                  <div className="grid w-full max-w-sm items-center gap-1.5">
+                    <Label htmlFor="receiverPhone" className="text-xs">
+                      Phone
+                    </Label>
+                    <Input
+                      type="text"
+                      name="receiverPhone"
+                      value={shipmentData.receiverPhone}
+                      onChange={(e) => {
+                        dispatch(
+                          updateDataState({
+                            path: ["to"],
+                            updates: {
+                              receiverPhone: e.target.value,
+                            },
+                          })
+                        );
+                      }}
+                      placeholder="Enter phone number"
+                    />
+                  </div>
+                </div>
                 <div className="flex gap-2">
                   <div className="grid w-full max-w-sm items-center gap-1.5">
                     <Label htmlFor="email" className="text-xs">

@@ -103,7 +103,7 @@ export default function From() {
               <div className="flex flex-col gap-3">
                 <div className="flex gap-2">
                   <div className="grid w-full max-w-sm items-center gap-1.5">
-                    <Label htmlFor="email" className="text-xs">
+                    <Label htmlFor="senderName" className="text-xs">
                       Full Name or Company Name *
                     </Label>
                     <Input
@@ -124,7 +124,7 @@ export default function From() {
                     />
                   </div>
                   <div className="grid w-full max-w-sm items-center gap-1.5">
-                    <Label htmlFor="email" className="text-xs">
+                    <Label htmlFor="senderAttention" className="text-xs">
                       Contact Name
                     </Label>
                     <Input
@@ -233,24 +233,24 @@ export default function From() {
                 </div>
                 <div className="flex flex-col gap-2">
                   <div className="grid w-full max-w-sm items-center gap-1.5">
-                    <Label htmlFor="faxNumber" className="text-xs">
-                      Fax Number
+                    <Label htmlFor="email" className="text-xs">
+                      Email
                     </Label>
                     <Input
-                      type="text"
-                      name="senderFax"
-                      value={shipmentData.senderFax}
+                      type="email"
+                      name="email"
+                      value={shipmentData.email}
                       onChange={(e) => {
                         dispatch(
                           updateDataState({
                             path: ["from"],
                             updates: {
-                              senderFax: e.target.value,
+                              email: e.target.value,
                             },
                           })
                         );
                       }}
-                      placeholder="Enter fax number"
+                      placeholder="Enter email"
                     />
                   </div>
                   <div className="grid w-full max-w-sm items-center gap-1.5">
@@ -275,7 +275,7 @@ export default function From() {
                     />
                   </div>
                   <div className="grid w-full max-w-sm items-center gap-1.5">
-                    <Label htmlFor="email" className="text-xs">
+                    <Label htmlFor="senderCountry" className="text-xs">
                       Country Code
                     </Label>
                     <Input
