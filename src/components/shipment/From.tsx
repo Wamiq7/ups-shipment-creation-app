@@ -5,7 +5,7 @@ import { Input } from "../ui/input";
 import { Label } from "../ui/label";
 import { Checkbox } from "../ui/checkbox";
 import { useEffect, useState } from "react";
-import { updateDataState } from "@/redux/dataSlice";
+import { clearFrom, updateDataState } from "@/redux/dataSlice";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { Card, CardContent, CardDescription, CardTitle } from "../ui/card";
 import axios from "axios";
@@ -73,16 +73,15 @@ export default function From() {
                   updateDataState({
                     path: ["from"],
                     updates: {
-                      senderName: selectedAddressData.senderName,
+                      senderName: selectedAddressData.fullName,
                       senderAttention: selectedAddressData.senderAttention,
-                      senderAddressLine:
-                        selectedAddressData.shipFromAddressLine,
-                      senderPostalCode: selectedAddressData.shipFromPostalCode,
-                      senderCity: selectedAddressData.shipFromCity,
-                      senderState: selectedAddressData.shipFromState,
-                      senderFax: selectedAddressData.shipFromFax,
-                      senderPhone: selectedAddressData.shipFromPhone,
-                      senderCountry: selectedAddressData.shipFromCountry,
+                      senderAddressLine: selectedAddressData.addressLineOne,
+                      senderPostalCode: selectedAddressData.zipCode,
+                      senderCity: selectedAddressData.city,
+                      senderState: selectedAddressData.state,
+                      email: selectedAddressData.email,
+                      senderPhone: selectedAddressData.phoneNumber,
+                      senderCountry: selectedAddressData.country,
                       selectedAddress: value,
                     },
                   })
@@ -325,6 +324,7 @@ export default function From() {
                       id="add"
                       checked={shipmentData.add}
                       onCheckedChange={(checked) => {
+                        dispatch(clearFrom());
                         dispatch(
                           updateDataState({
                             path: ["from"],
@@ -345,6 +345,25 @@ export default function From() {
                   </div>
                 </div>
               </div>
+            ) : Object.entries(shipmentData).filter(([_, value]) =>
+                typeof value === "string"
+                  ? value.trim()
+                  : value && typeof value !== "boolean"
+              ).length > 0 ? (
+              <p className="text-xs">
+                {Object.entries(shipmentData)
+                  .filter(([_, value]) =>
+                    typeof value === "string"
+                      ? value.trim()
+                      : value && typeof value !== "boolean"
+                  )
+                  .map(([_, value], index, filteredArray) => (
+                    <span key={index} className="mr-1">
+                      {value?.toString()}
+                      {index < filteredArray.length - 1 && ","}{" "}
+                    </span>
+                  ))}
+              </p>
             ) : (
               <p className="text-xs max-w-[65%]">
                 Company Name, Contact Name, Street Address, City, State, zip

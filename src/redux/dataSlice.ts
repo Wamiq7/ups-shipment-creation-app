@@ -139,10 +139,48 @@ export const dataSlice = createSlice({
         isSignatureRequired: false,
       });
     },
+    clearFrom: (state) => {
+      state.from = {
+        senderCountry: "",
+        senderName: "",
+        senderAttention: "",
+        senderTaxId: "",
+        senderPhone: "",
+        senderAddressLine: "",
+        senderCity: "",
+        senderState: "",
+        senderPostalCode: "",
+        contactName: "",
+        email: "",
+        extension: "",
+        edit: false,
+        add: true,
+        selectedAddress: "",
+      };
+    },
+    ClearTo: (state) => {
+      state.to = {
+        receiverName: "",
+        receiverAttention: "",
+        receiverPhone: "",
+        receiverAddressLine: "",
+        receiverCity: "",
+        receiverState: "",
+        receiverPostalCode: "",
+        receiverCountry: "",
+        contactName: "",
+        email: "",
+        extension: "",
+        edit: false,
+        add: true,
+        selectedAddress: "",
+      };
+    },
   },
 });
 
-export const { updateDataState, addPackage } = dataSlice.actions;
+export const { updateDataState, addPackage, clearFrom, ClearTo } =
+  dataSlice.actions;
 
 // Selector for accessing data state
 export const dataState = (state: RootState) => state.data;

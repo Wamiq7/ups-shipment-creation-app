@@ -35,7 +35,7 @@ import { useRouter } from "next/navigation";
 import createPdfFromLabel from "@/lib/utils";
 
 const DataGrid = ({ title, body }: { title: string; body: ReactNode }) => (
-  <Accordion type="single" collapsible>
+  <Accordion type="single" collapsible defaultValue="item-1">
     <AccordionItem value="item-1">
       <AccordionTrigger className="px-4 bg-gray-200 py-1 border-y-2 border-gray-300 font-semibold text-base">
         {title}

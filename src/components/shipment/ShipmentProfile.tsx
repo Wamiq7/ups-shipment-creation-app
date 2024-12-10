@@ -11,8 +11,7 @@ export default function ShipmentProfile() {
   const dispatch = useAppDispatch();
   const [shipmentProfiles, setShipmentProfiles] = useState<any[]>([]);
   const [selectedShipmentProfileId, setSelectedShipmentProfileId] =
-    useState("");
-  const [selectedShipmentProfile, setSelectedShipmentProfile] = useState("");
+    useState<string>("");
 
   // Fetch shipment profiles from API
   const getShipmentProfiles = async () => {
@@ -34,10 +33,7 @@ export default function ShipmentProfile() {
   useEffect(() => {
     const savedProfileId =
       localStorage.getItem("selectedShipmentProfileId") || "";
-    const savedProfile = localStorage.getItem("selectedShipmentProfile") || "";
-
     setSelectedShipmentProfileId(savedProfileId);
-    setSelectedShipmentProfile(savedProfile);
   }, []);
 
   useEffect(() => {
@@ -45,23 +41,9 @@ export default function ShipmentProfile() {
   }, []);
 
   const formattedProfiles = shipmentProfiles?.map((profile: any) => ({
-    value: profile,
+    value: profile._id,
     label: profile.name,
   }));
-
-  useEffect(() => {
-    if (selectedShipmentProfile) {
-      const selectedProfileId = shipmentProfiles.find(
-        (profile: any) => profile.name === selectedShipmentProfile
-      )?._id;
-
-      localStorage.setItem(
-        "selectedShipmentProfileId",
-        selectedProfileId || ""
-      );
-      localStorage.setItem("selectedShipmentProfile", selectedShipmentProfile);
-    }
-  }, [selectedShipmentProfile, shipmentProfiles]);
 
   useEffect(() => {
     if (selectedShipmentProfileId) {
@@ -87,17 +69,21 @@ export default function ShipmentProfile() {
           <BasicSelect
             options={formattedProfiles}
             placeholder="Select Shipment Profile"
-            value={selectedShipmentProfile}
-            onChange={(value: any) => {
+            value={
+              formattedProfiles.find(
+                (option) => option.value === selectedShipmentProfileId
+              )?.value || ""
+            }
+            onChange={(value: string) => {
               dispatch(
                 updateDataState({
                   path: ["shipmentProfile"],
                   updates: {
-                    selectedAddress: value._id,
+                    selectedAddress: value,
                   },
                 })
               );
-              setSelectedShipmentProfile(value.name);
+              setSelectedShipmentProfileId(value);
             }}
           />
         </div>

@@ -7,7 +7,7 @@ import { Input } from "../ui/input";
 import { Checkbox } from "../ui/checkbox";
 import { toast } from "sonner";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
-import { updateDataState } from "@/redux/dataSlice";
+import { ClearTo, updateDataState } from "@/redux/dataSlice";
 import axios from "axios";
 import BasicSelect from "../BasicSelect";
 
@@ -315,6 +315,7 @@ export default function To() {
                       id="add-to"
                       checked={shipmentData.add}
                       onCheckedChange={(checked) => {
+                        dispatch(ClearTo());
                         dispatch(
                           updateDataState({
                             path: ["to"],
@@ -335,6 +336,25 @@ export default function To() {
                   </div>
                 </div>
               </div>
+            ) : Object.entries(shipmentData).filter(([_, value]) =>
+                typeof value === "string"
+                  ? value.trim()
+                  : value && typeof value !== "boolean"
+              ).length > 0 ? (
+              <p className="text-xs">
+                {Object.entries(shipmentData)
+                  .filter(([_, value]) =>
+                    typeof value === "string"
+                      ? value.trim()
+                      : value && typeof value !== "boolean"
+                  )
+                  .map(([_, value], index, filteredArray) => (
+                    <span key={index} className="mr-1">
+                      {value?.toString()}
+                      {index < filteredArray.length - 1 && ","}{" "}
+                    </span>
+                  ))}
+              </p>
             ) : (
               <p className="text-xs max-w-[65%]">
                 Company Name, Contact Name, Street Address, City, State, zip
