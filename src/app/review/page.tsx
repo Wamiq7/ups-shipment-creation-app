@@ -50,12 +50,12 @@ const DataGrid = ({ title, body }: { title: string; body: ReactNode }) => (
 export default function Review() {
   const router = useRouter();
 
-  const [currentStep, setCurrentStep] = React.useState(1);
   const shipmentData = useAppSelector((state) => state.data);
+  const [currentStep, setCurrentStep] = React.useState(1);
   const [ratingsResponse, setRatingsResponse] = React.useState<any>(null);
+  const [pickUpRate, setPickUpRate] = React.useState<any>(null);
   const [label, setLabel] = useState("");
   const [loading, setIsLoading] = useState(false);
-  const [pickUpRate, setPickUpRate] = React.useState<any>(null);
 
   const { createAddressBookEntry } = useAddressBook();
   const { updateAddressBookEntry } = useUpdateAddressBook();
@@ -354,6 +354,11 @@ export default function Review() {
 
   // Handle Edit button clicks
   const handleEdit = (section: string) => {
+    setCurrentStep(1);
+    setRatingsResponse(null);
+    setPickUpRate(null);
+    setLabel("");
+    setIsLoading(false);
     router.push(`/?edit=${section}`);
   };
 
