@@ -18,7 +18,7 @@ import {
 import { useAppSelector } from "@/redux/hooks";
 import { Edit2Icon, LoaderCircle } from "lucide-react";
 import Link from "next/link";
-import React, { ReactNode, useState } from "react";
+import React, { ReactNode, useEffect, useState } from "react";
 import { toast } from "sonner";
 import {
   Accordion,
@@ -67,41 +67,51 @@ export default function Review() {
   const { updateShipmentProfile } = useUpdateShipmentProfile();
   const { createPackageShipment } = useCreatePackageShipment();
 
-  const handleAddress = async (payload: any) => {
-    const response = await fetch("/api/address-validation", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        regionalrequestindicator: "True", // Hardcoded value
-        maximumcandidatelistsize: "20", // Hardcoded value
-        addressPayload: {
-          AddressKeyFormat: {
-            ConsigneeName: payload.to.receiverName,
-            BuildingName: "Innoplex", // Hardcoded value
-            AddressLine: [payload.to.receiverAddressLine].filter(Boolean),
-            Region: payload.to.receiverCountry,
-            PoliticalDivision2: "ALISO VIEJO", // Hardcoded value
-            PoliticalDivision1: "CA", // Hardcoded value
-            PostcodePrimaryLow: payload.to.receiverPostalCode,
-            PostcodeExtendedLow: "1521", // Hardcoded value
-            Urbanization: "porto arundal", // Hardcoded value
-            CountryCode: payload.to.receiverCountry,
-          },
-        },
-      }),
-    });
-
-    if (response.ok) {
+  useEffect(() => {
+    if (shipmentData.to.selectedAddress !== "") {
       setCurrentStep(2);
-      const result = await response.json();
-      return result;
+    }
+  }, []);
+
+  const handleAddress = async (payload: any) => {
+    if (currentStep === 2) {
+      return "Success";
     } else {
-      setIsLoading(false);
-      const errorData = await response.json();
-      console.error("Error in Address:", errorData);
-      alert("An error occurred while creating the shipment");
+      const response = await fetch("/api/address-validation", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          regionalrequestindicator: "True", // Hardcoded value
+          maximumcandidatelistsize: "20", // Hardcoded value
+          addressPayload: {
+            AddressKeyFormat: {
+              ConsigneeName: payload.to.receiverName,
+              BuildingName: "Innoplex", // Hardcoded value
+              AddressLine: [payload.to.receiverAddressLine].filter(Boolean),
+              Region: payload.to.receiverCountry,
+              PoliticalDivision2: "ALISO VIEJO", // Hardcoded value
+              PoliticalDivision1: "CA", // Hardcoded value
+              PostcodePrimaryLow: payload.to.receiverPostalCode,
+              PostcodeExtendedLow: "1521", // Hardcoded value
+              Urbanization: "porto arundal", // Hardcoded value
+              CountryCode: payload.to.receiverCountry,
+            },
+          },
+        }),
+      });
+
+      if (response.ok) {
+        setCurrentStep(2);
+        const result = await response.json();
+        return result?.XAVResponse?.Response?.ResponseStatus?.Description;
+      } else {
+        setIsLoading(false);
+        const errorData = await response.json();
+        console.error("Error in Address:", errorData);
+        alert("An error occurred while creating the shipment");
+      }
     }
   };
 
@@ -245,10 +255,10 @@ export default function Review() {
     };
     await createPackageShipment(pkgData);
     // UPS Apis
+    // API=1
     const data = await handleAddress(shipmentData);
-    if (
-      data?.XAVResponse?.Response?.ResponseStatus?.Description === "Success"
-    ) {
+    if (data === "Success") {
+      // API=2
       const ratingData = await handleRatings(shipmentData);
       setRatingsResponse(ratingData);
       toast.success("Ratings fetched successfully");
@@ -256,6 +266,7 @@ export default function Review() {
         ratingData?.RateResponse.Response?.ResponseStatus?.Description ===
         "Success"
       ) {
+        // API=3
         const pickUpRateData = await handlePickupRate(shipmentData);
         setPickUpRate(pickUpRateData?.PickupRateResponse);
         if (pickUpRateData) {
