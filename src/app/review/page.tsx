@@ -144,30 +144,35 @@ export default function Review() {
   };
 
   const handlePickupRate = async (payload: any) => {
-    try {
-      const response = await fetch("/api/pickup", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          payload: payload,
-        }),
-      });
+    if (shipmentData.setPickup.type === "option-zero") {
+      setCurrentStep(4);
+      return;
+    } else {
+      try {
+        const response = await fetch("/api/pickup", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            payload: payload,
+          }),
+        });
 
-      if (response.ok) {
-        setCurrentStep(4);
-        const data = await response.json();
-        return data;
-      } else {
-        const errorData = await response.json();
-        console.error("Error in Pickup:", errorData);
+        if (response.ok) {
+          setCurrentStep(4);
+          const data = await response.json();
+          return data;
+        } else {
+          const errorData = await response.json();
+          console.error("Error in Pickup:", errorData);
+          alert("An error occurred while creating the pickup");
+        }
+      } catch (error) {
+        setIsLoading(false);
+        console.log(error);
         alert("An error occurred while creating the pickup");
       }
-    } catch (error) {
-      setIsLoading(false);
-      console.log(error);
-      alert("An error occurred while creating the pickup");
     }
   };
 
@@ -538,6 +543,12 @@ export default function Review() {
           </h1>
         )}
 
+        {shipmentData.setPickup.type === "option-zero" && (
+          <p className="text-red-500 mt-4 text-xs text-center">
+            You have selected 'I'll drop off my shipment.' option so the Pickup
+            Rate is going to be skipped
+          </p>
+        )}
         <ProgressBar
           steps={[
             "Review",

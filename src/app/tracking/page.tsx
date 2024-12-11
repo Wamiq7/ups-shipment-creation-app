@@ -92,8 +92,6 @@ export default function Tracking() {
     handleFetchPickups();
   }, []);
 
-  console.log(pickupData);
-
   return (
     <>
       <Navbar />

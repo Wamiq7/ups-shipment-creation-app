@@ -19,12 +19,20 @@ export default function SetPickup() {
   const shipmentData = useAppSelector((state) => state.data);
   const [isEdit, setIsEdit] = useState(false);
   const [isEdit2, setIsEdit2] = useState(false);
-  const [onCallPickup, setOnCallPickup] = useState(false);
+  const [onCallPickup, setOnCallPickup] = useState("option-one");
   const [savedAddress, setSavedAddress] = useState<any>([]);
   const [selectedAddress, setSelectedAddress] = useState("");
 
-  const handlePickupChange = (value) => {
-    setOnCallPickup(value === "option-two");
+  const handlePickupChange = (value: string) => {
+    dispatch(
+      updateDataState({
+        path: ["setPickup"],
+        updates: {
+          type: value,
+        },
+      })
+    );
+    setOnCallPickup(value);
   };
 
   const themeOptions = [
@@ -143,6 +151,12 @@ export default function SetPickup() {
           onValueChange={handlePickupChange}
         >
           <div className="flex items-center space-x-2">
+            <RadioGroupItem value="option-zero" id="option-zero" />
+            <Label htmlFor="option-zero" className="text-xs lg:text-sm">
+              I'll drop off my shipment.
+            </Label>
+          </div>
+          <div className="flex items-center space-x-2">
             <RadioGroupItem value="option-one" id="option-one" />
             <Label htmlFor="option-one" className="text-xs lg:text-sm">
               Include this shipment in one of my pending pickups.
@@ -155,7 +169,7 @@ export default function SetPickup() {
             </Label>
           </div>
         </RadioGroup>
-        {onCallPickup ? (
+        {onCallPickup === "option-two" ? (
           <div className="space-y-6">
             <CalendarInput
               label="Date of Birth"
@@ -559,7 +573,7 @@ export default function SetPickup() {
               )}
             </div>
           </div>
-        ) : (
+        ) : onCallPickup === "option-one" ? (
           <>
             <Textarea
               placeholder="Pickup Location"
@@ -580,7 +594,7 @@ export default function SetPickup() {
               Country, email address, phone number
             </p>
           </>
-        )}
+        ) : null}
       </CardContent>
     </Card>
   );

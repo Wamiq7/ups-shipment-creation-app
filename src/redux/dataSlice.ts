@@ -94,6 +94,9 @@ const initialState: IDataState = {
     add: true,
     selectedAddress: "",
   },
+  setPickup: {
+    type: "option-zero",
+  },
 };
 
 // Helper function to update nested properties

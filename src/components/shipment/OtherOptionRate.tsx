@@ -20,8 +20,6 @@ export default function OtherOptionRate() {
   const shipmentData = useAppSelector((state) => state.data);
   const [rate, setRate] = useState<any>();
 
-  console.log("shipmentData", shipmentData.packageShipmentDetails.serviceType);
-
   const handleRatings = async (payload: any) => {
     try {
       const response = await fetch("/api/rating", {
@@ -36,7 +34,6 @@ export default function OtherOptionRate() {
 
       if (response.ok) {
         const data = await response.json();
-        console.log(data);
         setRate(data?.RateResponse);
       } else {
         const errorData = await response.json();

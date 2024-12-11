@@ -137,7 +137,7 @@ export async function POST(req: NextRequest) {
         body: JSON.stringify(shipmentPayload),
       }
     );
-    console.log(response);
+
     // Handle UPS API response
     if (!response.ok) {
       const errorData = await response.json();

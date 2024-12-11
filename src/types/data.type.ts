@@ -99,4 +99,7 @@ export interface IDataState {
   pickUpDetails: PickupDetails;
   pendingPickups: pendingPickups;
   shipmentProfile: ShipmentProfile;
+  setPickup: {
+    type: string;
+  };
 }
