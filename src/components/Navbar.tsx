@@ -34,33 +34,31 @@ export default function Navbar() {
   };
 
   return (
-    <nav className="bg-gray-800 shadow-sm">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between h-16">
-        <Link
-          href="/"
-          className="flex-shrink-0 flex items-center ml-2 text-xl font-bold text-white"
-        >
-          UPS Shipment
-        </Link>
-        {isLoggedIn && (
-          <div className="flex items-center space-x-4">
-            <Button asChild variant="ghost" className={isActive("/")}>
-              <Link href={"/"} aria-current="page">
-                Shipping
-              </Link>
-            </Button>
-            <Button asChild variant="ghost" className={isActive("/tracking")}>
-              <Link href={"/tracking"} aria-current="page">
-                Tracking
-              </Link>
-            </Button>
-            <LogOut
-              className="cursor-pointer text-red-500"
-              onClick={handleLogout}
-            />
-          </div>
-        )}
-      </div>
+    <nav className="bg-gray-800 shadow-sm flex justify-between h-16 px-3 lg:px-6">
+      <Link
+        href="/"
+        className="flex-shrink-0 flex items-center text-xl font-bold text-white"
+      >
+        UPS Shipment
+      </Link>
+      {isLoggedIn && (
+        <div className="flex items-center space-x-4">
+          <Button asChild variant="ghost" className={isActive("/")}>
+            <Link href={"/"} aria-current="page">
+              Shipping
+            </Link>
+          </Button>
+          <Button asChild variant="ghost" className={isActive("/tracking")}>
+            <Link href={"/tracking"} aria-current="page">
+              Tracking
+            </Link>
+          </Button>
+          <LogOut
+            className="cursor-pointer text-red-500"
+            onClick={handleLogout}
+          />
+        </div>
+      )}
     </nav>
   );
 }

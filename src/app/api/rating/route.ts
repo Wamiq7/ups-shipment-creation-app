@@ -71,8 +71,10 @@ export async function POST(req: NextRequest) {
             ],
           },
           Service: {
-            Code: shipment.serviceType || "03",
-            Description: "Ground",
+            Description: "",
+            Code: shipment.packageShipmentDetails.serviceType || "03",
+            // Description:
+            //   shipment.packageShipmentDetails.description || "Ground",
           },
           NumOfPieces: "1",
           Package: {
@@ -108,7 +110,7 @@ export async function POST(req: NextRequest) {
     const version = "v2403";
     // const additionalInfo = "string";
 
-    const token=req.cookies.get("access_token")?.value;
+    const token = req.cookies.get("access_token")?.value;
 
     if (!token?.valueOf) {
       throw new Error("Token not found");
