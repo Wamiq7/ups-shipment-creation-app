@@ -75,4 +75,15 @@ body {
   body {
     @apply bg-background text-foreground;
   }
+  .portrait-image {
+    display: block; /* Ensures proper layout */
+    max-height: 100%; /* Adjust height as needed */
+    max-width: 100%; /* Adjust width as needed */
+    height: auto; /* Maintain aspect ratio */
+    width: auto; /* Maintain aspect ratio */
+    transform: rotate(90deg); /* Rotates the image */
+    transform-origin: center; /* Ensure rotation happens around the center */
+    position: relative; /* Ensures it doesn't overlap other elements */
+    z-index: 1; /* Keeps it in normal stacking order */
+  }
 }

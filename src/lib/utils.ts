@@ -50,20 +50,24 @@ async function createPdfFromLabel(labelBase64: string): Promise<Blob> {
   const pdfDoc = await PDFDocument.create();
 
   // Add a page to the document
-  const page = pdfDoc.addPage([600, 800]);
+  const page = pdfDoc.addPage([600, 800]); // Page size (can adjust as needed)
 
   // Embed the PNG image in the PDF document
   const image = await pdfDoc.embedPng(pngBytes);
 
-  // Get the dimensions of the image
-  const { width, height } = image.scale(0.5); // Adjust scale as needed
+  // Get the dimensions of the image (width and height)
+  const { width, height } = image.scale(1); // No scaling yet, we will rotate it
 
-  // Draw the image on the page
+  // Set the desired width and height for the image (portrait mode)
+  const desiredWidth = 730;
+  const desiredHeight = 650;
+
+  // Rotate the image to portrait and adjust its dimensions
   page.drawImage(image, {
     x: 50,
-    y: page.getHeight() - height - 50, // Adjust positioning as needed
-    width,
-    height,
+    y: page.getHeight() - desiredHeight - 50, // Adjust positioning to fit the page
+    width: desiredWidth,
+    height: desiredHeight,
   });
 
   // Serialize the PDF document to bytes

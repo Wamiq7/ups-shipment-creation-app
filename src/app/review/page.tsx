@@ -536,7 +536,14 @@ export default function Review() {
         {label && (
           <div>
             <h1 className="text-2xl font-semibold mb-4">Shipment Label</h1>
-            <img src={label} alt="Shipping Label" className="mb-4" />
+            <div className="flex flex-col items-center">
+              <img
+                src={label}
+                alt="Shipping Label"
+                className="mb-4 portrait-image mt-[3rem] w-[730px] h-[650px]"
+              />
+            </div>
+
             <Button
               variant={"default"}
               onClick={handleDownload}
