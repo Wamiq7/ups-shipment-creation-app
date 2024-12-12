@@ -10,6 +10,7 @@ import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { Card, CardContent, CardDescription, CardTitle } from "../ui/card";
 import axios from "axios";
 import BasicSelect from "../BasicSelect";
+import { Combobox } from "../Combobox";
 
 export default function From() {
   const dispatch = useAppDispatch();
@@ -145,7 +146,8 @@ export default function From() {
                   </div>
                 </div>
                 <div className="grid w-full max-w-sm items-center gap-1.5">
-                  <Label htmlFor="senderAddressLine" className="text-xs">
+                  <Combobox />
+                  {/* <Label htmlFor="senderAddressLine" className="text-xs">
                     Address Line 1 *
                   </Label>
                   <Input
@@ -163,7 +165,7 @@ export default function From() {
                       );
                     }}
                     placeholder="Enter address line"
-                  />
+                  /> */}
                 </div>
                 <div className="flex gap-2">
                   <div className="grid w-full max-w-sm items-center gap-1.5">
