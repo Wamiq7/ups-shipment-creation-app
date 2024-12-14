@@ -49,8 +49,9 @@ export default function Login() {
       const data = await response.json();
       router.push("/");
       // window.location.reload();
-    } catch (error: any) {
-      console.error("Error fetching token:", error?.message);
+    } catch (err: any) {
+      setError(err.response?.data?.message || "Failed to log in");
+      console.error("Error fetching token:", err);
     }
   }
 
@@ -68,6 +69,7 @@ export default function Login() {
         await getToken();
       }
     } catch (err: any) {
+      console.log("err", err);
       setError(err.response?.data?.message || "Failed to log in");
     } finally {
       setLoading(false);
